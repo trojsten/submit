@@ -1,6 +1,6 @@
 .env
 *.py[co]
 .idea
-media/*
-statements/*
-testovac/.wsgi.py.swp
+*.egg
+*.egg-info
+example/submit/*

@@ -1,0 +1,27 @@
+{% extends "example/base.html" %}
+
+{% block title %}Tasks{% endblock %}
+
+{% block page_header %}<h1>Tasks</h1>{% endblock %}
+
+{% block page_content %}
+    <div>
+        {% if user.is_staff %}
+            <p>
+                <a href="{% url 'admin:submit_submit_changelist'%}?o=-7"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> View all submits of all users</a>
+            </p>
+        {% endif %}
+
+        <div class="list-group">
+            {% for task in tasks %}
+                <a class="list-group-item contest-list-task" href="{% url 'task_statement' task.pk %}">
+                    <div class="row">
+                        <div class="col-md-4">{{ task.name }}</div>
+                        <div class="col-md-4">Deadline: {{ task.deadline }} </div>
+                        <div class="col-md-4">Points: {{ task.max_points }}</div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

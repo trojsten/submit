@@ -16,9 +16,13 @@ class LoadConfigurationFromTemplate(forms.Select):
 
 class SubmitReceiverForm(forms.ModelForm):
     receiver_template = forms.ChoiceField(
-        choices=((x.id, str(x)) for x in SubmitReceiverTemplate.objects.all()),
+        choices=[],
         widget=LoadConfigurationFromTemplate()
     )
+
+    def __init__(self, *args, **kwargs):
+        super(SubmitReceiverForm, self).__init__(*args, **kwargs)
+        self.fields['receiver_template'].choices = ((x.id, str(x)) for x in SubmitReceiverTemplate.objects.all())
 
     class Meta:
         model = SubmitReceiver
