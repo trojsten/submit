@@ -1,7 +1,6 @@
 .env
 *.py[co]
 .idea
-submit/*
 media/*
 statements/*
 testovac/.wsgi.py.swp

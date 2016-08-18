@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from testovac.submit.models import SubmitReceiver, SubmitReceiverTemplate
+from submit.models import SubmitReceiver, SubmitReceiverTemplate
 from testovac.tasks.models import Competition, Contest, Task
 
 

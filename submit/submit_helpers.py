@@ -1,5 +1,4 @@
 import os
-
 from django.http import Http404
 from sendfile import sendfile
 

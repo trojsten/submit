@@ -1,4 +1,4 @@
-from . import settings as submit_settings
+import submit.settings as submit_settings
 
 
 def display_score(review):

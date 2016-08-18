@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from testovac.submit.models import Submit, Review
+from submit.models import Submit, Review
 from testovac.tasks.models import Task
 
 

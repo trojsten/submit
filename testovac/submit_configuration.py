@@ -2,12 +2,12 @@
 from collections import defaultdict
 
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
 from django.utils.html import format_html
+from django.utils.translation import ugettext_lazy as _
+from submit.models import Submit
+from submit.views import PostSubmitForm
 
-from testovac.submit.defaults import submit_receiver_type
-from testovac.submit.models import Submit
-from testovac.submit.views import PostSubmitForm
+from submit.defaults import submit_receiver_type
 from testovac.results.generator import ResultsGenerator, display_points
 
 

@@ -1,14 +1,13 @@
+from django.contrib.auth.models import Group
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
-from django.core.urlresolvers import reverse
-from django.contrib.auth.models import Group
-
+from django.utils.translation import ugettext_lazy as _
 from sortedm2m.fields import SortedManyToManyField
 
+from submit.models import SubmitReceiver
 from testovac.tasks.utils import default_contest_start_end_time
-from testovac.submit.models import SubmitReceiver
 
 
 @python_2_unicode_compatible

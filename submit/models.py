@@ -1,5 +1,4 @@
 import os
-
 from django.conf import settings as django_settings
 from django.contrib.postgres.fields import JSONField
 from django.core.urlresolvers import reverse
@@ -8,9 +7,8 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 
-
-from . import settings as submit_settings
 from . import constants
+from . import settings as submit_settings
 
 
 class SubmitConfig(models.Model):
@@ -91,7 +89,7 @@ class Submit(models.Model):
         return self.review_set.order_by('-time', '-pk').first()
 
     def get_absolute_url(self):
-        return reverse('testovac.submit.views.view_submit', kwargs=dict(submit_id=self.id))
+        return reverse('submit.views.view_submit', kwargs=dict(submit_id=self.id))
 
     class Meta:
         verbose_name = 'submit'

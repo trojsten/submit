@@ -1,8 +1,8 @@
 from django import template
 
-from ..constants import ReviewResponse
-from ..forms import FileSubmitForm
-from ..models import Review, Submit
+from submit.constants import ReviewResponse
+from submit.forms import FileSubmitForm
+from submit.models import Review, Submit
 
 register = template.Library()
 

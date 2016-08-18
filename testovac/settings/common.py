@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'testovac',
     'testovac.login',
     'testovac.menu',
-    'testovac.submit',
+    'submit',
     'testovac.tasks',
     'testovac.results',
 
