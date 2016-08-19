@@ -15,10 +15,10 @@ class PostSubmitFormCustomized(PostSubmitForm):
         Submits after the contest has finished are automatically set to `not accepted`.
         Submit.is_accepted can be modified manually however.
         """
+        task = submit.receiver.task_set.first()
 
-        if not submit.receiver.task_set.all():
+        if task is None:
             return Submit.NOT_ACCEPTED
-        task = submit.receiver.task_set.all()[0]
 
         if task.deadline < timezone.now():
             return Submit.NOT_ACCEPTED
@@ -38,32 +38,30 @@ class PostSubmitFormCustomized(PostSubmitForm):
 
 
 def can_post_submit(receiver, user):
-    possible_tasks = receiver.task_set.all()
-    if not possible_tasks:
+    task = receiver.task_set.first()
+    if task is None:
         return False
-    return possible_tasks[0].visible or user.is_staff
+    return task.visible or user.is_staff
 
 
 def display_submit_receiver_name(receiver):
     type = submit_receiver_type(receiver)
 
-    possible_tasks = receiver.task_set.all()
-    if not possible_tasks:
+    task = receiver.task_set.first()
+    if task is None:
         return 'no-task {} ({})'.format(receiver.id, type)
-    return '{} ({})'.format(possible_tasks[0].slug, type)
+    return '{} ({})'.format(task.slug, type)
 
 
 def display_score(review):
-    possible_tasks = review.submit.receiver.task_set.all().prefetch_related('submit_receivers')
-    if not possible_tasks:
+    task = review.submit.receiver.task_set.prefetch_related('submit_receivers').first()
+    if task is None:
         return 0
-    task = possible_tasks[0]
-
     return "{:.2f}".format(review.score / (100 * len(task.submit_receivers.all())) * task.max_points)
 
 
 def default_inputs_folder_at_judge(receiver):
-    if not receiver.task_set.all():
+    task = receiver.task_set.first()
+    if task is None:
         return '{}-{}'.format(settings.JUDGE_INTERFACE_IDENTITY, receiver.id)
-    task = receiver.task_set.all()[0]
     return task.slug

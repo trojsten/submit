@@ -28,7 +28,7 @@ class SubmitReceiverForm(forms.ModelForm):
         model = SubmitReceiver
         fields = ('receiver_template', 'configuration')
         widgets = {
-            'configuration': forms.Textarea(attrs={'rows': 15, 'cols': 40})
+            'configuration': forms.Textarea(attrs={'rows': 15, 'cols': 50})
         }
 
 
