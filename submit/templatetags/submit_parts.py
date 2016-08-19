@@ -2,7 +2,7 @@ from django import template
 
 from submit.constants import ReviewResponse
 from submit.forms import FileSubmitForm
-from submit.models import Review, Submit
+from submit.models import Submit
 
 register = template.Library()
 
@@ -34,21 +34,12 @@ def submit_list(receiver, user):
     """
     List of all submits for specified user and receiver.
     """
-
-    last_review_for_each_submit = Review.objects.filter(
-        submit__receiver=receiver, submit__user=user
-    ).order_by(
-        '-submit__pk', '-time', '-pk'
-    ).distinct(
-        'submit__pk'
-    ).select_related(
-        'submit'
-    )
+    submits = Submit.objects.filter(receiver=receiver, user=user).order_by('-time', '-pk')
 
     data = {
         'user_has_admin_privileges': receiver.has_admin_privileges(user),
         'receiver': receiver,
-        'submits': [(review.submit, review) for review in last_review_for_each_submit],
+        'submits': [(submit, submit.last_review()) for submit in submits],
         'response': ReviewResponse,
         'Submit': Submit,
     }

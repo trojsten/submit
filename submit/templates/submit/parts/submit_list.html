@@ -62,7 +62,7 @@
             {% else %}
                 <td>..</td>
             {% endif %}
-            <td><a class="btn btn-primary btn-xs" href="{% url 'view_submit' submit_id=submit.id %}">{% trans 'View' %}</a></td>
+            <td><a class="btn btn-primary btn-xs" href="{% url 'view_submit' submit_id=submit.pk %}">{% trans 'View' %}</a></td>
         </tr>
     {% endfor %}
     </tbody>
