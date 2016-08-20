@@ -24,7 +24,9 @@ class SubmitConfig(models.Model):
 @python_2_unicode_compatible
 class SubmitReceiverTemplate(SubmitConfig):
     """
-    When creating a new submit receiver user can choose a template.
+    When creating a new submit receiver user can choose a template:
+    template.configuration is copied into receiver.configuration thus preserving backwards compatibility,
+    when the template is modified
     """
     name = models.CharField(max_length=64)
 
@@ -39,7 +41,7 @@ class SubmitReceiverTemplate(SubmitConfig):
 @python_2_unicode_compatible
 class SubmitReceiver(SubmitConfig):
     """
-    Submit receiver manages one type of submits.
+    Submit receiver manages one type of submits for one `task`.
     """
     class Meta:
         verbose_name = 'submit receiver'
@@ -76,10 +78,19 @@ class Submit(models.Model):
     is_accepted = models.IntegerField(default=ACCEPTED, choices=IS_ACCEPTED_CHOICES)
 
     def dir_path(self):
+        """
+        All files related to this submit are stored here: submitted file, review files, testing protocols, raw files.
+        Each submit has a dedicated location for its files in
+        /settings.SUBMIT_PATH/submits/<user_id>/<receiver_id>/<submit_id>/
+        """
         return os.path.join(submit_settings.SUBMIT_PATH, 'submits',
                             str(self.user.id), str(self.receiver.id), str(self.id))
 
     def file_path(self):
+        """
+        Submit can hold one file. The original filename is stored in submit.filename
+        Because of the filename id.submit, files with inappropriate names (e.g. 12345.review) will be stored correctly.
+        """
         return os.path.join(self.dir_path(), str(self.id) + constants.SUBMITTED_FILE_EXTENSION)
 
     def file_exists(self):
@@ -108,6 +119,12 @@ class Submit(models.Model):
 class Review(models.Model):
     """
     Review holds information about feedback for one submit. This feedback can be created manually or automatically.
+
+    review.score is an absolute scoring, its semantics (how this number affects the results) should be defined
+    in a result-app
+
+    Review file should store file with feedback (e.g. submitted file with reviewer's comments).
+    review.filename is an original name of this file
     """
     submit = models.ForeignKey(Submit)
     score = models.FloatField()
