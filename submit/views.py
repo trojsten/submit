@@ -131,6 +131,7 @@ def receive_protocol(request):
     """
     Receive protocol from judge via POST and save it to review.protocol_path()
     """
+    # judge expects submit_id, but at front-end it is Review that stores all feedback data
     review_id = request.POST['submit_id']
     review = get_object_or_404(Review, pk=review_id)
     protocol = request.POST['protocol'].encode('utf-8')

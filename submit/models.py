@@ -39,7 +39,7 @@ class SubmitReceiverTemplate(SubmitConfig):
 @python_2_unicode_compatible
 class SubmitReceiver(SubmitConfig):
     """
-    Submit receiver manages one type of submits belonging to 1 Submit Receiver Group.
+    Submit receiver manages one type of submits.
     """
     class Meta:
         verbose_name = 'submit receiver'
@@ -96,7 +96,8 @@ class Submit(models.Model):
         verbose_name_plural = 'submits'
 
     def __str__(self):
-        return '%s - <%s> (%s)' % (
+        return 'submit %d (%s, %s, %s)' % (
+            self.id,
             self.user,
             self.receiver,
             self.time.strftime('%H:%M:%S %d.%m.%Y'),
@@ -106,7 +107,7 @@ class Submit(models.Model):
 @python_2_unicode_compatible
 class Review(models.Model):
     """
-    Holds information about feedback for one submit. This feedback can be created manually or automatically.
+    Review holds information about feedback for one submit. This feedback can be created manually or automatically.
     """
     submit = models.ForeignKey(Submit)
     score = models.FloatField()
@@ -141,4 +142,4 @@ class Review(models.Model):
         verbose_name_plural = 'reviews'
 
     def __str__(self):
-        return 'review %d for submit %s' % (self.id, str(self.submit))
+        return 'review %d for %s' % (self.id, str(self.submit))

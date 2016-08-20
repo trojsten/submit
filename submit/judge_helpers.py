@@ -62,7 +62,7 @@ def prepare_raw_file(review):
 
     raw_head = "%s\n%s\n%s\n%s\n%d\n%s\n" % (
         submit_settings.JUDGE_INTERFACE_IDENTITY,
-        review_id,
+        review_id,      # judge expects submit_id, but at front-end it is Review that stores all feedback data
         user_id,
         correct_filename,
         timestamp,
@@ -113,6 +113,7 @@ def parse_protocol(protocol_path, force_show_details=False):
     if data['compile_log_present']:
         data['final_result'] = JudgeTestResult.COMPILATION_ERROR
     else:
+        # Test result of review is set by first non-OK test result
         data['final_result'] = JudgeTestResult.OK
         for test in data['tests']:
             if test['result'] != JudgeTestResult.OK:

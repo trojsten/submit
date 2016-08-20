@@ -59,6 +59,7 @@ class SubmitAdmin(ViewOnSiteMixin, admin.ModelAdmin):
 
     def submit_id(self, submit):
         return 'submit %d' % (submit.id,)
+    submit_id.admin_order_field = 'id'
 
     def status(self, submit):
         review = submit.last_review()
@@ -70,7 +71,29 @@ class SubmitAdmin(ViewOnSiteMixin, admin.ModelAdmin):
 
 
 class ReviewAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('review_id', 'time', 'short_response', 'display_score', 'submit_id_', 'submit_user',
+                    'submit_receiver', 'submit_time',)
+    list_select_related = ('submit', 'submit__user', 'submit__receiver')
+
+    def review_id(self, review):
+        return 'review %d' % (review.id,)
+    review_id.admin_order_field = 'id'
+
+    def submit_id_(self, review):
+        return '%d' % (review.submit.id, )
+    submit_id_.admin_order_field = 'submit__id'
+
+    def submit_receiver(self, review):
+        return review.submit.receiver
+
+    def submit_user(self, review):
+        return review.submit.user
+    submit_user.admin_order_field = 'submit__user'
+
+    def submit_time(self, review):
+        return review.submit.time
+    submit_user.admin_order_field = 'submit__time'
+
 
 admin.site.register(SubmitReceiverTemplate, SubmitReceiverTemplateAdmin)
 admin.site.register(SubmitReceiver, SubmitReceiverAdmin)
