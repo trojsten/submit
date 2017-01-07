@@ -1,7 +1,7 @@
 from django import template
 
 from submit.constants import ReviewResponse
-from submit.forms import FileSubmitForm
+from submit.forms import submit_form_factory
 from submit.models import Submit
 
 register = template.Library()
@@ -21,7 +21,7 @@ def submit_form(receiver, redirect, user, caption=None):
 
     conf = receiver.configuration
     if 'form' in conf:
-        data['submit_form'] = FileSubmitForm(configuration=conf['form'])
+        data['submit_form'] = submit_form_factory(configuration=conf['form'])
         data['caption'] = conf['form'].get('caption', None) or caption
     if 'link' in conf:
         data['submit_link'] = conf['link']

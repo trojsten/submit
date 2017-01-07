@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 
 from .constants import JudgeTestResult, ReviewResponse
 from .models import SubmitReceiverTemplate, SubmitReceiver, Submit, Review
-from .forms import FileSubmitForm
+from .forms import submit_form_factory
 from .submit_helpers import create_submit, write_chunks_to_file, send_file
 from .judge_helpers import create_review_and_send_to_judge, parse_protocol, JudgeConnectionError
 
@@ -50,7 +50,7 @@ class PostSubmitForm(View):
             raise PermissionDenied()
 
         if 'form' in config:
-            form = FileSubmitForm(request.POST, request.FILES, configuration=config['form'])
+            form = submit_form_factory(request.POST, request.FILES, configuration=config['form'])
         else:
             raise PermissionDenied()
 
