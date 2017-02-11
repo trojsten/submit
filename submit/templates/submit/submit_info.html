@@ -5,7 +5,11 @@
     <div class="panel-body">
     <table class="table-condensed">
         <tr>
-            <th>ID:</th>
+            <th>{% trans 'Task' %}:</th>
+            <td>{{ submit.receiver.task }}</td>
+        </tr>
+        <tr>
+            <th>{% trans 'Submit ID' %}:</th>
             <td>{{ submit.id }}</td>
         </tr>
         <tr>
