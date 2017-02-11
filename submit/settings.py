@@ -1,5 +1,7 @@
 from django.conf import settings as django_settings
 
+SUBMIT_TASK_MODEL = getattr(django_settings, 'SUBMIT_TASK_MODEL', 'submit.BaseTask')
+
 SUBMIT_PATH = getattr(django_settings, 'SUBMIT_PATH', 'submit/')
 
 # DB can hold names with length up to 128, some space is reserved for extension mapping

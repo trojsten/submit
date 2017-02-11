@@ -11,6 +11,20 @@ from . import constants
 from . import settings as submit_settings
 
 
+class BaseTask(models.Model):
+    """
+    Base model for Task to be extended in outer app using submit app.
+    Defines interface required by submit app.
+    """
+    name = models.CharField(max_length=128)
+
+    def get_absolute_url(self):
+        raise NotImplementedError
+
+    class Meta:
+        abstract = True
+
+
 class SubmitConfig(models.Model):
     """
     This is an abstract model providing JSONField to store submit configurations.
@@ -41,8 +55,10 @@ class SubmitReceiverTemplate(SubmitConfig):
 @python_2_unicode_compatible
 class SubmitReceiver(SubmitConfig):
     """
-    Submit receiver manages one type of submits for one `task`.
+    Submit receiver manages one type of submits for one task.
     """
+    task = models.ForeignKey(submit_settings.SUBMIT_TASK_MODEL)
+
     class Meta:
         verbose_name = 'submit receiver'
         verbose_name_plural = 'submit receivers'

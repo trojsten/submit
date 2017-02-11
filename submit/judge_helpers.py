@@ -69,7 +69,7 @@ def prepare_raw_file(review):
         original_filename,
     )
 
-    write_chunks_to_file(review.raw_path(), [raw_head, submitted_source])
+    write_chunks_to_file(review.raw_path(), [raw_head.encode(), submitted_source])
 
 
 def parse_protocol(protocol_path, force_show_details=False):
