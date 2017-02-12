@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-19 10:53+0200\n"
+"POT-Creation-Date: 2017-02-11 19:07+0100\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
@@ -75,32 +75,32 @@ msgid "Reviewed"
 msgstr "Ohodnotené"
 
 #: forms.py:24
-msgid "Language"
-msgstr "Jazyk"
+msgid "No file was submitted"
+msgstr "Nebol odovzdaný žiadny súbor"
 
-#: forms.py:38
+#: forms.py:42
 #, python-format
 msgid "Invalid file extension %(extension)s"
 msgstr "Typ súboru %(extension)s nie je podporovaný"
 
-#: forms.py:43
-msgid "No file was submitted"
-msgstr "Nebol odovzdaný žiadny súbor"
+#: forms.py:62
+msgid "Language"
+msgstr "Jazyk"
 
-#: forms.py:54
+#: forms.py:76
 msgid "Automatic language discovery failed. Unknown language extension."
 msgstr ""
 "Automatické určenie jazyka zlyhalo kvôli neznámej/nepodporovanej koncovke."
 
-#: models.py:72
+#: models.py:90
 msgid "no"
 msgstr "nie"
 
-#: models.py:73
+#: models.py:91
 msgid "with penalization"
 msgstr "s penalizáciou"
 
-#: models.py:74
+#: models.py:92
 msgid "yes"
 msgstr "áno"
 
@@ -125,7 +125,7 @@ msgid "View all submits of all users"
 msgstr "Zobraz submity všetkých používateľov"
 
 #: templates/submit/parts/submit_list.html:27
-#: templates/submit/submit_info.html:16
+#: templates/submit/submit_info.html:20
 msgid "Time"
 msgstr "Čas"
 
@@ -198,47 +198,59 @@ msgstr "Komentár opravovateľa"
 msgid "Not reviewed yet."
 msgstr "Zatiaľ neohodnotené."
 
-#: templates/submit/submit_info.html:4 templates/submit/view_submit.html:7
+#: templates/submit/submit_info.html:4
 msgid "Submit"
 msgstr "Submit"
 
+#: templates/submit/submit_info.html:8
+msgid "Task"
+msgstr "Úloha"
+
 #: templates/submit/submit_info.html:12
+msgid "Submit ID"
+msgstr "ID submitu"
+
+#: templates/submit/submit_info.html:16
 msgid "User"
 msgstr "Používateľ"
 
-#: templates/submit/submit_info.html:20
+#: templates/submit/submit_info.html:24
 msgid "Accepted"
 msgstr "Akceptované"
 
-#: templates/submit/submit_info.html:25
+#: templates/submit/submit_info.html:29
 msgid "Submitted file"
 msgstr "Odovzdaný súbor"
 
-#: templates/submit/submit_info.html:32
+#: templates/submit/submit_info.html:36
 msgid "Show"
 msgstr "Ukáž"
 
-#: templates/submit/submit_info.html:34
+#: templates/submit/submit_info.html:38
 msgid "Download"
 msgstr "Stiahni"
 
-#: templates/submit/view_submit.html:27
+#: templates/submit/view_submit.html:7 templates/submit/view_submit.html:27
 msgid "Submit details"
 msgstr "Detaily submitu"
 
-#: templates/submit/view_submit.html:31
+#: templates/submit/view_submit.html:30
+msgid "Task statement"
+msgstr "Zadanie úlohy"
+
+#: templates/submit/view_submit.html:35
 msgid "Edit and review"
 msgstr "Uprav a ohodnoť"
 
-#: templates/submit/view_submit.html:35
+#: templates/submit/view_submit.html:39
 msgid "Rejudge submit"
 msgstr "Pretestovať submit"
 
-#: templates/submit/view_submit.html:56
+#: templates/submit/view_submit.html:60
 msgid "Protocol"
 msgstr "Protokol"
 
-#: templates/submit/view_submit.html:60
+#: templates/submit/view_submit.html:64
 msgid "All submits"
 msgstr "Všetky submity"
 

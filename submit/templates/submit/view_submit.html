@@ -4,7 +4,7 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block title %}{% trans 'Submit' %} {{ submit.id }}{% endblock title %}
+{% block title %}{% trans 'Submit details' %} ({{ submit.id }}){% endblock title %}
 
 {% block stylesheets %}
     {{ block.super }}
@@ -25,6 +25,10 @@
 
 {% block page_header %}
     <h1>{% trans 'Submit details' %}</h1>
+
+    <a href={{ submit.receiver.task.get_absolute_url }}>
+        <span class="glyphicon glyphicon-list"></span> {% trans 'Task statement' %}
+    </a>
 
     {% if user_has_admin_privileges %}
         <a href="{% url 'admin:submit_submit_change' submit.id %}">

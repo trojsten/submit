@@ -22,7 +22,7 @@
 
 {% block page_content %}
     {% if user.is_authenticated %}
-        {% for receiver in task.submit_receivers.all %}
+        {% for receiver in task.submitreceiver_set.all %}
             <div class="well">
                 {% submit_form receiver task.get_absolute_url user 'Solution' %}
                 <p></p>

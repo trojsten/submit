@@ -143,6 +143,7 @@ SUBMIT_DISPLAY_SCORE = 'example.submit_configuration.display_score'
 JUDGE_DEFAULT_INPUTS_FOLDER_FOR_RECEIVER = 'example.submit_configuration.default_inputs_folder_at_judge'
 SUBMIT_CAN_POST_SUBMIT = 'example.submit_configuration.can_post_submit'
 
+SUBMIT_TASK_MODEL = 'tasks.Task'
 SUBMIT_PATH = env('SUBMIT_PATH', os.path.join(PROJECT_DIR, 'submit'))
 JUDGE_INTERFACE_IDENTITY = env('JUDGE_INTERFACE_IDENTITY', 'EXAMPLE')
 JUDGE_ADDRESS = env('JUDGE_ADDRESS', '127.0.0.1')
