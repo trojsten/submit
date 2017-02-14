@@ -170,7 +170,8 @@ class Review(models.Model):
     submit = models.ForeignKey(Submit)
     score = models.FloatField()
     time = models.DateTimeField(auto_now_add=True)
-    short_response = models.CharField(max_length=128, blank=True)
+    short_response = models.CharField(max_length=128, blank=True,
+                                      choices=constants.ReviewResponse.all_items_as_choices())
     comment = models.TextField(blank=True)
     filename = models.CharField(max_length=128, blank=True)
 
