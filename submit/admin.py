@@ -34,6 +34,7 @@ class SubmitReceiverForm(forms.ModelForm):
 
 class SubmitReceiverAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'task')
+    search_fields = ('task__name', )
     form = SubmitReceiverForm
 
 
@@ -54,12 +55,13 @@ class ViewOnSiteMixin(object):
 
 class SubmitAdmin(ViewOnSiteMixin, admin.ModelAdmin):
     inlines = [ReviewInline]
-    list_display = ('submit_id', 'view_on_site_list_display', 'receiver', 'user', 'status', 'score', 'time',
-                    'is_accepted')
-    search_fields = ('user__username', 'user__first_name', 'user__last_name')
+    list_display = ('submit_id', 'view_on_site_list_display', 'user', 'task', 'receiver', 'status', 'score', 'time',
+                    'is_accepted',)
+    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'receiver__task__name',)
+    list_filter = ('is_accepted', 'user__is_staff',)
 
     def get_queryset(self, request):
-        qs = self.model.with_reviews.get_queryset()
+        qs = self.model.with_reviews.get_queryset().select_related('receiver__task', 'user')
 
         # needed from superclass method
         ordering = self.get_ordering(request)
@@ -71,6 +73,10 @@ class SubmitAdmin(ViewOnSiteMixin, admin.ModelAdmin):
         return 'submit %d' % (submit.id,)
     submit_id.admin_order_field = 'id'
 
+    def task(self, submit):
+        return submit.receiver.task
+    task.admin_order_field = 'receiver__task'
+
     def status(self, submit):
         review = submit.last_review
         return review.short_response if review is not None else ''
@@ -80,34 +86,6 @@ class SubmitAdmin(ViewOnSiteMixin, admin.ModelAdmin):
         return review.display_score() if review is not None else ''
 
 
-class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('review_id', 'time', 'short_response', 'display_score', 'submit_id_', 'submit_user',
-                    'submit_receiver', 'submit_time',)
-
-    def get_queryset(self, request):
-        return super(ReviewAdmin, self).get_queryset(request).select_related('submit__user')
-
-    def review_id(self, review):
-        return 'review %d' % (review.id,)
-    review_id.admin_order_field = 'id'
-
-    def submit_id_(self, review):
-        return '%d' % (review.submit.id, )
-    submit_id_.admin_order_field = 'submit__id'
-
-    def submit_user(self, review):
-        return review.submit.user
-    submit_user.admin_order_field = 'submit__user'
-
-    def submit_receiver(self, review):
-        return review.submit.receiver
-
-    def submit_time(self, review):
-        return review.submit.time
-    submit_user.admin_order_field = 'submit__time'
-
-
 admin.site.register(SubmitReceiverTemplate, SubmitReceiverTemplateAdmin)
 admin.site.register(SubmitReceiver, SubmitReceiverAdmin)
 admin.site.register(Submit, SubmitAdmin)
-admin.site.register(Review, ReviewAdmin)

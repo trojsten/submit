@@ -138,8 +138,8 @@ TASKS_DEFAULT_SUBMIT_RECEIVER_TEMPLATE = 'source'
 
 # Submit app
 SUBMIT_POST_SUBMIT_FORM_VIEW = 'example.submit_configuration.PostSubmitFormCustomized'
-SUBMIT_PREFETCH_DATA_FOR_SCORE_CALCULATION = 'example.submit_configuration.prefetch_data_for_score_calculation'
-SUBMIT_DISPLAY_SCORE = 'example.submit_configuration.display_score'
+#SUBMIT_PREFETCH_DATA_FOR_SCORE_CALCULATION = 'example.submit_configuration.prefetch_data_for_score_calculation'
+#SUBMIT_DISPLAY_SCORE = 'example.submit_configuration.display_score'
 JUDGE_DEFAULT_INPUTS_FOLDER_FOR_RECEIVER = 'example.submit_configuration.default_inputs_folder_at_judge'
 SUBMIT_CAN_POST_SUBMIT = 'example.submit_configuration.can_post_submit'
 
