@@ -30,7 +30,9 @@
         </tr>
     </thead>
     <tbody>
-    {% for submit, review in submits %}
+    {% for submit in submits %}
+        {% with review=submit.last_review %}
+
         {% if review %}
             <tr class="{% if review.short_response == response.OK or review.short_response == response.REVIEWED %}
                             success
@@ -57,13 +59,10 @@
                     <span class="text-danger">|&nbsp;{% trans 'Accepted with penalization' %}</span>
                 {% endif %}
             </td>
-            {% if review %}
-                <td>{{ review.display_score }}</td>
-            {% else %}
-                <td>..</td>
-            {% endif %}
+            <td>{% if review %}{{ review.display_score }}{% else %}..{% endif %}</td>
             <td><a class="btn btn-primary btn-xs" href="{% url 'view_submit' submit_id=submit.pk %}">{% trans 'View' %}</a></td>
         </tr>
+        {% endwith %}
     {% endfor %}
     </tbody>
 </table>

@@ -1,6 +1,10 @@
 import submit.settings as submit_settings
 
 
+def prefetch_data_for_score_calculation(reviews_qs):
+    return reviews_qs
+
+
 def display_score(review):
     return str(review.score)
 

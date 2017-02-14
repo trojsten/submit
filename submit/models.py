@@ -3,6 +3,7 @@ from django.conf import settings as django_settings
 from django.contrib.postgres.fields import JSONField
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.query import Prefetch
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
@@ -73,6 +74,18 @@ class SubmitReceiver(SubmitConfig):
         return import_string(submit_settings.SUBMIT_DISPLAY_SUBMIT_RECEIVER_NAME)(self)
 
 
+class SubmitWithReviewManager(models.Manager):
+    def get_queryset(self):
+        submit_qs = super(SubmitWithReviewManager, self).get_queryset()
+
+        reviews_qs = Review.objects \
+            .filter(submit__in=submit_qs) \
+            .order_by('-submit__time', '-submit__pk', '-time', '-pk') \
+            .distinct('submit__time', 'submit__pk') \
+
+        return submit_qs.prefetch_related(Prefetch('review_set', queryset=reviews_qs, to_attr='last_reviews_list'))
+
+
 @python_2_unicode_compatible
 class Submit(models.Model):
     """
@@ -93,6 +106,9 @@ class Submit(models.Model):
     ]
     is_accepted = models.IntegerField(default=ACCEPTED, choices=IS_ACCEPTED_CHOICES)
 
+    objects = models.Manager()
+    with_reviews = SubmitWithReviewManager()
+
     def dir_path(self):
         """
         All files related to this submit are stored here: submitted file, review files, testing protocols, raw files.
@@ -112,8 +128,11 @@ class Submit(models.Model):
     def file_exists(self):
         return os.path.exists(self.file_path())
 
-    def last_review(self):
+    def get_last_review(self):
+        if hasattr(self, 'last_reviews_list'):
+            return self.last_reviews_list[0] if len(self.last_reviews_list) > 0 else None
         return self.review_set.order_by('-time', '-pk').first()
+    last_review = property(get_last_review)
 
     def get_absolute_url(self):
         return reverse('submit.views.view_submit', kwargs=dict(submit_id=self.id))
@@ -129,6 +148,12 @@ class Submit(models.Model):
             self.receiver,
             self.time.strftime('%H:%M:%S %d.%m.%Y'),
         )
+
+
+class ReviewManager(models.Manager):
+    def get_queryset(self):
+        qs = super(ReviewManager, self).get_queryset()
+        return import_string(submit_settings.SUBMIT_PREFETCH_DATA_FOR_SCORE_CALCULATION)(qs)
 
 
 @python_2_unicode_compatible
@@ -148,6 +173,8 @@ class Review(models.Model):
     short_response = models.CharField(max_length=128, blank=True)
     comment = models.TextField(blank=True)
     filename = models.CharField(max_length=128, blank=True)
+
+    objects = ReviewManager()
 
     def display_score(self):
         return import_string(submit_settings.SUBMIT_DISPLAY_SCORE)(self)

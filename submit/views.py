@@ -81,14 +81,14 @@ class PostSubmitForm(View):
 
 @login_required
 def view_submit(request, submit_id):
-    submit = get_object_or_404(Submit.objects.select_related('receiver'), pk=submit_id)
+    submit = get_object_or_404(Submit.objects.select_related('receiver', 'user'), pk=submit_id)
     user_has_admin_privileges = submit.receiver.has_admin_privileges(request.user)
 
     if submit.user != request.user and not user_has_admin_privileges:
         raise PermissionDenied()
 
     conf = submit.receiver.configuration
-    review = submit.last_review()
+    review = submit.last_review
     data = {
         'submit': submit,
         'review': review,

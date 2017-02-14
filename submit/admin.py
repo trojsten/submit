@@ -33,6 +33,7 @@ class SubmitReceiverForm(forms.ModelForm):
 
 
 class SubmitReceiverAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'task')
     form = SubmitReceiverForm
 
 
@@ -57,23 +58,34 @@ class SubmitAdmin(ViewOnSiteMixin, admin.ModelAdmin):
                     'is_accepted')
     search_fields = ('user__username', 'user__first_name', 'user__last_name')
 
+    def get_queryset(self, request):
+        qs = self.model.with_reviews.get_queryset()
+
+        # needed from superclass method
+        ordering = self.get_ordering(request)
+        if ordering:
+            qs = qs.order_by(*ordering)
+        return qs
+
     def submit_id(self, submit):
         return 'submit %d' % (submit.id,)
     submit_id.admin_order_field = 'id'
 
     def status(self, submit):
-        review = submit.last_review()
+        review = submit.last_review
         return review.short_response if review is not None else ''
 
     def score(self, submit):
-        review = submit.last_review()
+        review = submit.last_review
         return review.display_score() if review is not None else ''
 
 
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ('review_id', 'time', 'short_response', 'display_score', 'submit_id_', 'submit_user',
                     'submit_receiver', 'submit_time',)
-    list_select_related = ('submit', 'submit__user', 'submit__receiver')
+
+    def get_queryset(self, request):
+        return super(ReviewAdmin, self).get_queryset(request).select_related('submit__user')
 
     def review_id(self, review):
         return 'review %d' % (review.id,)
@@ -83,12 +95,12 @@ class ReviewAdmin(admin.ModelAdmin):
         return '%d' % (review.submit.id, )
     submit_id_.admin_order_field = 'submit__id'
 
-    def submit_receiver(self, review):
-        return review.submit.receiver
-
     def submit_user(self, review):
         return review.submit.user
     submit_user.admin_order_field = 'submit__user'
+
+    def submit_receiver(self, review):
+        return review.submit.receiver
 
     def submit_time(self, review):
         return review.submit.time
