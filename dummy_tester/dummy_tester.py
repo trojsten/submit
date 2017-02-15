@@ -1,7 +1,14 @@
+import os
+
 from django.utils.six.moves import urllib, socketserver as SocketServer
 
+protocol_file_names = {
+    'ok': 'OK.protocol',
+    'all': 'ALL.protocol',
+    'cerr': 'CERR.protocol',
+}
 
-protocol_data = "<protokol><runLog><test><name>01.in</name><resultCode></resultCode><resultMsg>OK</resultMsg><time>0</time><details></details><score></score></test><score>100</score><details></details><finalResult>1</finalResult><finalMessage>OK</finalMessage></runLog></protokol>"
+default_protocol = 'OK.protocol'
 
 
 class Testovac(SocketServer.BaseRequestHandler):
@@ -13,6 +20,13 @@ class Testovac(SocketServer.BaseRequestHandler):
         data_str = input_data.decode('utf8')
         data_obj = data_str.split('\n', 6)
         submit_id = data_obj[1]
+
+        submit_file_name = data_obj[5]
+        submit_type = os.path.splitext(submit_file_name)[0].lower()
+        protocol_file_name = protocol_file_names.get(submit_type, default_protocol)
+
+        with open(protocol_file_name, 'r') as protocol_file:
+            protocol_data = protocol_file.read()
 
         data = urllib.parse.urlencode({
             "submit_id": int(submit_id),
