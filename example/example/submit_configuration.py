@@ -42,8 +42,10 @@ def can_post_submit(receiver, user):
     return task.visible or user.is_staff
 
 
-def display_submit_receiver_name(receiver):
-    return '{} ({})'.format(receiver.task.slug, submit_receiver_type(receiver))
+def prefetch_data_for_score_calculation(reviews_qs):
+    return reviews_qs\
+        .select_related('submit__receiver__task')\
+        .prefetch_related('submit__receiver__task__submitreceiver_set')
 
 
 def display_score(review):

@@ -34,12 +34,12 @@ def submit_list(receiver, user):
     """
     List of all submits for specified user and receiver.
     """
-    submits = Submit.objects.filter(receiver=receiver, user=user).order_by('-time', '-pk')
+    submits = Submit.with_reviews.filter(receiver=receiver, user=user).order_by('-time', '-pk')
 
     data = {
         'user_has_admin_privileges': receiver.has_admin_privileges(user),
         'receiver': receiver,
-        'submits': [(submit, submit.last_review()) for submit in submits],
+        'submits': submits,
         'response': ReviewResponse,
         'Submit': Submit,
     }
