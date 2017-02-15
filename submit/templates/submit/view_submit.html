@@ -34,7 +34,7 @@
         <a href="{% url 'admin:submit_submit_change' submit.id %}">
             <span class="glyphicon glyphicon-pencil"></span> {% trans 'Edit and review' %}
         </a>
-        {% if submit.receiver.configuration.send_to_judge %}
+        {% if submit.receiver.send_to_judge %}
             <a href="{% url 'rejudge_submit' submit.id %}">
                 <span class="glyphicon glyphicon-send"></span> {% trans 'Rejudge submit' %}
             </a>
@@ -52,11 +52,11 @@
         </div>
     </div>
 
-    {% if show_submitted_file %}
+    {% if submit.receiver.show_submitted_file %}
         <pre class="prettyprint collapse" id="collapse-submitted-file">{{ submitted_file }}</pre>
     {% endif %}
 
-    {% if review and protocol_expected %}
+    {% if review and submit.receiver.send_to_judge %}
         <h3>{% trans 'Protocol' %}</h3>
         {% include 'submit/protocol.html' %}
     {% endif %}

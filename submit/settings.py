@@ -8,21 +8,35 @@ SUBMIT_PATH = getattr(django_settings, 'SUBMIT_PATH', 'submit/')
 SUBMIT_UPLOADED_FILENAME_MAXLENGTH = int(getattr(django_settings, 'SUBMIT_UPLOADED_FILENAME_MAXLENGTH', 120))
 
 # Extensions of uploaded source files will be replaced for compatibility with judge
-# JSON Configs will be validated against VALUES in this dict
 SUBMIT_EXTENSION_MAPPING_FOR_JUDGE = getattr(django_settings, 'SUBMIT_EXTENSION_MAPPING_FOR_JUDGE',
     {
-        ".cpp": ".cc",
-        ".cc": ".cc",
-        ".pp": ".pas",
-        ".pas": ".pas",
-        ".dpr": ".pas",
-        ".c": ".c",
-        ".py": ".py",
-        ".py3": ".py",
-        ".hs": ".hs",
-        ".cs": ".cs",
-        ".java": ".java",
-        ".zip": ".zip"
+        '.cpp': '.cc',
+        '.cc': '.cc',
+        '.pp': '.pas',
+        '.pas': '.pas',
+        '.dpr': '.pas',
+        '.c': '.c',
+        '.py': '.py',
+        '.py3': '.py',
+        '.hs': '.hs',
+        '.cs': '.cs',
+        '.java': '.java',
+        '.zip': '.zip'
+    }
+)
+# SubmitReceiver languages will be checked against this list
+SUBMIT_EXTENSIONS_ACCEPTED_BY_JUDGE = list(set(SUBMIT_EXTENSION_MAPPING_FOR_JUDGE.values()))
+
+SUBMIT_EXTENSIONS_VERBOSE_CHOICES = getattr(django_settings, 'SUBMIT_EXTENSIONS_VERBOSE_CHOICES',
+    {
+        '.cc': 'C++ (.cpp/.cc)',
+        '.pas': 'Pascal (.pas/.dpr)',
+        '.c': 'C (.c)',
+        '.py': 'Python 3.4 (.py/.py3)',
+        '.hs': 'Haskell (.hs)',
+        '.cs': 'C# (.cs)',
+        '.java': 'Java (.java)'
+
     }
 )
 
@@ -43,7 +57,7 @@ SUBMIT_PREFETCH_DATA_FOR_SCORE_CALCULATION = getattr(django_settings,
 SUBMIT_DISPLAY_SCORE = getattr(django_settings, 'SUBMIT_DISPLAY_SCORE',
                                'submit.defaults.display_score')
 
-# Override `SubmitReceiver.__str__()` to be more descriptive than "{}".format(id)
+# Override `SubmitReceiver.__str__()` to be more descriptive than '{}'.format(id)
 SUBMIT_DISPLAY_SUBMIT_RECEIVER_NAME = getattr(django_settings, 'SUBMIT_DISPLAY_SUBMIT_RECEIVER_NAME',
                                               'submit.defaults.display_submit_receiver_name')
 

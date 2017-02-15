@@ -8,6 +8,21 @@ class SubmitReceiverAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'task')
     search_fields = ('task__name', )
 
+    fieldsets = (
+        (None, {
+            'fields': ('task', )
+        }),
+        ('Form options', {
+            'fields': ('has_form', 'caption', 'extensions', 'languages', 'external_link'),
+        }),
+        ('Judge options', {
+            'fields': ('send_to_judge', 'inputs_folder_at_judge'),
+        }),
+        ('Submit page options', {
+            'fields': ('show_all_details', 'show_submitted_file'),
+        }),
+    )
+
 
 class ReviewInline(admin.StackedInline):
     model = Review

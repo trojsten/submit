@@ -47,8 +47,8 @@ class FileSubmitForm(BaseSubmitForm):
 
 class CodeSubmitForm(BaseSubmitForm):
     """
-    Constructor expects a keyword argument `languages` -- list of option pairs (extension, verbose description)
-    [(".c", "C (.c)"), (".py", "Python 3.4 (.py/.py3)")]. A default option (recognize automatically) is added.
+    Constructor expects a keyword argument `languages` -- list of extensions in format [".cpp", ".py"]
+    or None/[] meaning that any extension is accepted.
 
     Checks whether the ext. is allowed, maps extension to judge-supported-ext. and renames file with this new ext.
     """
@@ -56,11 +56,10 @@ class CodeSubmitForm(BaseSubmitForm):
         self.languages = kwargs.pop('languages')
         super(CodeSubmitForm, self).__init__(*args, **kwargs)
 
-        automatic = [
-            [constants.DEDUCE_LANGUAGE_AUTOMATICALLY_OPTION, constants.DEDUCE_LANGUAGE_AUTOMATICALLY_VERBOSE],
-        ]
+        choices = [(constants.DEDUCE_LANGUAGE_AUTOMATICALLY_OPTION, constants.DEDUCE_LANGUAGE_AUTOMATICALLY_VERBOSE)]
+        choices.extend([(l, submit_settings.SUBMIT_EXTENSIONS_VERBOSE_CHOICES.get(l, l)) for l in self.languages])
         self.fields['language'] = forms.ChoiceField(label=_('Language'),
-                                                    choices=automatic + self.languages,
+                                                    choices=choices,
                                                     required=True)
 
     def clean(self):
@@ -68,20 +67,27 @@ class CodeSubmitForm(BaseSubmitForm):
         if 'submit_file' in cleaned_data and 'language' in cleaned_data:
             filename = cleaned_data['submit_file'].name
             language = cleaned_data['language']
-            allowed_languages = [choice[0] for choice in self.languages]
             try:
                 cleaned_data['submit_file'].name = add_language_preference_to_filename(filename, language,
-                                                                                            allowed_languages)
+                                                                                       self.languages)
             except Exception:
                 raise forms.ValidationError(_('Automatic language discovery failed. Unknown language extension.'),
                                             code='invalid language')
         return cleaned_data
 
 
+def comma_separated_extensions_to_list(extensions_string):
+    if not extensions_string:
+        return None
+    extensions = [e.strip().lower() for e in extensions_string.split(',')]
+    extensions = ['.' + e for e in extensions if e != '']
+    return extensions
+
+
 def submit_form_factory(*args, **kwargs):
-    configuration = kwargs.pop('configuration', dict())
-    languages = configuration.get('languages', None)
-    extensions = configuration.get('extensions', None)
+    receiver = kwargs.pop('receiver')
+    languages = comma_separated_extensions_to_list(receiver.languages)
+    extensions = comma_separated_extensions_to_list(receiver.extensions)
 
     if languages is not None:
         return CodeSubmitForm(*args,  **dict(kwargs, languages=languages))

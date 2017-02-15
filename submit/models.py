@@ -1,6 +1,5 @@
 import os
 from django.conf import settings as django_settings
-from django.contrib.postgres.fields import JSONField
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.query import Prefetch
@@ -32,7 +31,36 @@ class SubmitReceiver(models.Model):
     Submit receiver manages one type of submits for one task.
     """
     task = models.ForeignKey(submit_settings.SUBMIT_TASK_MODEL)
-    configuration = JSONField(default=dict)
+
+    has_form = models.BooleanField(default=False, help_text=_('Check to collect files via submit form.'))
+    caption = models.CharField(max_length=128, blank=True, default='',
+                               help_text=_('Text that appears on the left from submit form.'))
+    extensions = models.CharField(max_length=256, blank=True, default='', help_text=_(
+        'List of comma separated extensions e.g. "txt, pdf, doc".<br />'
+        'Leave blank to accept any extension.'))
+    languages = models.CharField(max_length=256, blank=True, default='', help_text=_(
+        'List of comma separated programming language extensions e.g. "c, cpp, py, hs".<br />'
+        'Use languages supported by the judge from %(languages)s<br />'
+        ) % {'languages': str(submit_settings.SUBMIT_EXTENSIONS_ACCEPTED_BY_JUDGE)})
+
+    external_link = models.CharField(max_length=256, blank=True, default='', help_text=_(
+        'URL for external submits. A button with link will be rendered in the submit form.'))
+
+    send_to_judge = models.BooleanField(default=False, help_text=_('Check to send submits to automated judge.'))
+    inputs_folder_at_judge = models.CharField(max_length=128, blank=True, default='',  help_text=_(
+        'If left blank, and send_to_judge is checked, this field will be set automatically.'))
+
+    show_all_details = models.BooleanField(default=False, help_text=_('Check to display protocol details to all users.'))
+    show_submitted_file = models.BooleanField(default=False, help_text=_(
+        'Check to render submitted file as a part of web page for submit.'))
+
+    def save(self, *args, **kwargs):
+        super(SubmitReceiver, self).save(*args, **kwargs)
+
+        if not self.inputs_folder_at_judge and self.send_to_judge:
+            self.inputs_folder_at_judge = import_string(submit_settings.JUDGE_DEFAULT_INPUTS_FOLDER_FOR_RECEIVER)(self)
+
+        super(SubmitReceiver, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'submit receiver'

@@ -32,7 +32,7 @@ class PostSubmitForm(View):
         """
         This message will be added to `messages` after successful submit.
         """
-        if submit.receiver.configuration.get('send_to_judge', False):
+        if submit.receiver.send_to_judge:
             return format_html(
                     _('Submit successful. Testing protocol will be soon available <a href="{link}">here</a>.'),
                     link=reverse('view_submit', args=[submit.id])
@@ -44,13 +44,12 @@ class PostSubmitForm(View):
 
     def post(self, request, receiver_id):
         receiver = get_object_or_404(SubmitReceiver, pk=receiver_id)
-        config = receiver.configuration
 
         if not receiver.can_post_submit(request.user):
             raise PermissionDenied()
 
-        if 'form' in config:
-            form = submit_form_factory(request.POST, request.FILES, configuration=config['form'])
+        if receiver.has_form:
+            form = submit_form_factory(request.POST, request.FILES, receiver=receiver)
         else:
             raise PermissionDenied()
 
@@ -68,7 +67,7 @@ class PostSubmitForm(View):
                 messages.add_message(request, messages.ERROR, error)
             return redirect(request.POST['redirect_to'])
 
-        if config.get('send_to_judge', False):
+        if receiver.send_to_judge:
             try:
                 self.send_to_judge(submit)
             except JudgeConnectionError:
@@ -87,22 +86,20 @@ def view_submit(request, submit_id):
     if submit.user != request.user and not user_has_admin_privileges:
         raise PermissionDenied()
 
-    conf = submit.receiver.configuration
+    receiver = submit.receiver
     review = submit.last_review
     data = {
         'submit': submit,
         'review': review,
         'user_has_admin_privileges': user_has_admin_privileges,
-        'show_submitted_file': conf.get('show_submitted_file', False),
-        'protocol_expected': conf.get('send_to_judge', False),
     }
 
-    if data['show_submitted_file']:
+    if receiver.show_submitted_file:
         with open(submit.file_path(), 'r') as submitted_file:
             data['submitted_file'] = submitted_file.read().decode('utf-8', 'replace')
 
-    if data['protocol_expected'] and review and review.protocol_exists():
-        force_show_details = conf.get('show_all_details', False) or user_has_admin_privileges
+    if receiver.send_to_judge and review and review.protocol_exists():
+        force_show_details = receiver.show_all_details or user_has_admin_privileges
         data['protocol'] = parse_protocol(review.protocol_path(), force_show_details)
         data['result'] = JudgeTestResult
 

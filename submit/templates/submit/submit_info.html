@@ -6,7 +6,7 @@
     <table class="table-condensed">
         <tr>
             <th>{% trans 'Task' %}:</th>
-            <td>{{ submit.receiver.task }}</td>
+            <td>{{ submit.receiver.task.name }}</td>
         </tr>
         <tr>
             <th>{% trans 'Submit ID' %}:</th>
@@ -32,7 +32,7 @@
             <tr>
                 <th></th>
                 <td>
-                    {% if show_submitted_file %}
+                    {% if submit.receiver.show_submitted_file %}
                         <a class="btn btn-primary" data-toggle="collapse" href="#collapse-submitted-file">{% trans 'Show' %}</a>
                     {% endif %}
                      <a class="btn btn-primary" href="{% url 'download_submit' submit.id %}">{% trans 'Download' %}</a>
