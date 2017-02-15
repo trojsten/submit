@@ -26,39 +26,13 @@ class BaseTask(models.Model):
         abstract = True
 
 
-class SubmitConfig(models.Model):
-    """
-    This is an abstract model providing JSONField to store submit configurations.
-    """
-    configuration = JSONField(default=dict)
-
-    class Meta:
-        abstract = True
-
-
 @python_2_unicode_compatible
-class SubmitReceiverTemplate(SubmitConfig):
-    """
-    When creating a new submit receiver user can choose a template:
-    template.configuration is copied into receiver.configuration thus preserving backwards compatibility,
-    when the template is modified
-    """
-    name = models.CharField(max_length=64)
-
-    class Meta:
-        verbose_name = 'submit receiver template'
-        verbose_name_plural = 'submit receiver templates'
-
-    def __str__(self):
-        return self.name
-
-
-@python_2_unicode_compatible
-class SubmitReceiver(SubmitConfig):
+class SubmitReceiver(models.Model):
     """
     Submit receiver manages one type of submits for one task.
     """
     task = models.ForeignKey(submit_settings.SUBMIT_TASK_MODEL)
+    configuration = JSONField(default=dict)
 
     class Meta:
         verbose_name = 'submit receiver'
