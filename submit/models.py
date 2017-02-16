@@ -1,6 +1,7 @@
 import os
 from django.conf import settings as django_settings
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.query import Prefetch
 from django.utils.encoding import python_2_unicode_compatible
@@ -25,6 +26,18 @@ class BaseTask(models.Model):
         abstract = True
 
 
+def comma_separated_string_to_list(comma_string):
+    if comma_string.strip() == '':
+        return []
+    return [word.strip() for word in comma_string.split(',')]
+
+
+def validate_languages(value):
+    for lang in comma_separated_string_to_list(value):
+        if lang not in constants.LANGUAGE_IDENTIFIERS:
+            raise ValidationError(_('Language "%(lang)s" is not supported by judge.'), params={'lang': lang})
+
+
 @python_2_unicode_compatible
 class SubmitReceiver(models.Model):
     """
@@ -38,10 +51,11 @@ class SubmitReceiver(models.Model):
     extensions = models.CharField(max_length=256, blank=True, default='', help_text=_(
         'List of comma separated extensions e.g. "txt, pdf, doc".<br />'
         'Leave blank to accept any extension.'))
-    languages = models.CharField(max_length=256, blank=True, default='', help_text=_(
+    languages = models.CharField(max_length=256, blank=True, default='', validators=[validate_languages], help_text=_(
         'List of comma separated programming language extensions e.g. "c, cpp, py, hs".<br />'
-        'Use languages supported by the judge from %(languages)s<br />'
-        ) % {'languages': str(submit_settings.SUBMIT_EXTENSIONS_ACCEPTED_BY_JUDGE)})
+        'Use languages supported by the judge from: %(languages)s.<br />'
+        'When languages are set, field "extensions" is ignored.'
+        ) % {'languages': ', '.join(constants.LANGUAGE_IDENTIFIERS)})
 
     external_link = models.CharField(max_length=256, blank=True, default='', help_text=_(
         'URL for external submits. A button with link will be rendered in the submit form.'))
@@ -61,6 +75,12 @@ class SubmitReceiver(models.Model):
             self.inputs_folder_at_judge = import_string(submit_settings.JUDGE_DEFAULT_INPUTS_FOLDER_FOR_RECEIVER)(self)
 
         super(SubmitReceiver, self).save(*args, **kwargs)
+
+    def get_languages(self):
+        return comma_separated_string_to_list(self.languages)
+
+    def get_extensions(self):
+        return ['.' + e for e in comma_separated_string_to_list(self.extensions)]
 
     class Meta:
         verbose_name = 'submit receiver'

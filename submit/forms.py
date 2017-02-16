@@ -47,8 +47,7 @@ class FileSubmitForm(BaseSubmitForm):
 
 class CodeSubmitForm(BaseSubmitForm):
     """
-    Constructor expects a keyword argument `languages` -- list of extensions in format [".cpp", ".py"]
-    or None/[] meaning that any extension is accepted.
+    Constructor expects a keyword argument `languages` -- list of extensions in format [".cpp", ".py"].
 
     Checks whether the ext. is allowed, maps extension to judge-supported-ext. and renames file with this new ext.
     """
@@ -57,7 +56,7 @@ class CodeSubmitForm(BaseSubmitForm):
         super(CodeSubmitForm, self).__init__(*args, **kwargs)
 
         choices = [(constants.DEDUCE_LANGUAGE_AUTOMATICALLY_OPTION, constants.DEDUCE_LANGUAGE_AUTOMATICALLY_VERBOSE)]
-        choices.extend([(l, submit_settings.SUBMIT_EXTENSIONS_VERBOSE_CHOICES.get(l, l)) for l in self.languages])
+        choices.extend([(lang, constants.LANGUAGE_CHOICE_TEXTS[lang]) for lang in self.languages])
         self.fields['language'] = forms.ChoiceField(label=_('Language'),
                                                     choices=choices,
                                                     required=True)
@@ -76,20 +75,12 @@ class CodeSubmitForm(BaseSubmitForm):
         return cleaned_data
 
 
-def comma_separated_extensions_to_list(extensions_string):
-    if not extensions_string:
-        return None
-    extensions = [e.strip().lower() for e in extensions_string.split(',')]
-    extensions = ['.' + e for e in extensions if e != '']
-    return extensions
-
-
 def submit_form_factory(*args, **kwargs):
     receiver = kwargs.pop('receiver')
-    languages = comma_separated_extensions_to_list(receiver.languages)
-    extensions = comma_separated_extensions_to_list(receiver.extensions)
 
-    if languages is not None:
+    languages = receiver.get_languages()
+    if languages:
         return CodeSubmitForm(*args,  **dict(kwargs, languages=languages))
 
+    extensions = receiver.get_extensions()
     return FileSubmitForm(*args, **dict(kwargs, extensions=extensions))

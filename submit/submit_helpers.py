@@ -12,14 +12,16 @@ def add_language_preference_to_filename(filename, language_preference, allowed_l
     extension = extension.lower()
 
     if language_preference != constants.DEDUCE_LANGUAGE_AUTOMATICALLY_OPTION:
-        extension = language_preference
+        extension = constants.LANGUAGE_DEFINITIONS[language_preference][1]
 
-    if extension in submit_settings.SUBMIT_EXTENSION_MAPPING_FOR_JUDGE:
-        extension = submit_settings.SUBMIT_EXTENSION_MAPPING_FOR_JUDGE[extension]
+    if extension in constants.LANGUAGE_EXTENSIONS:
+        extension = constants.LANGUAGE_EXTENSION_MAPPING[extension]
     else:
         raise Exception
 
-    if extension not in allowed_languages:
+    allowed_extensions = [ext for language in allowed_languages
+                          for ext in constants.LANGUAGE_DEFINITIONS[language][2]]
+    if extension not in allowed_extensions:
         raise Exception
 
     return ''.join((name, extension))
