@@ -212,6 +212,9 @@ class Review(models.Model):
     def display_score(self):
         return import_string(submit_settings.SUBMIT_DISPLAY_SCORE)(self)
 
+    def render_comment(self):
+        return import_string(submit_settings.SUBMIT_RENDER_REVIEW_COMMENT)(self)
+
     def verbose_response(self):
         return constants.ReviewResponse.verbose(self.short_response)
 

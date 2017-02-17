@@ -28,7 +28,7 @@
                 {% endif %}
             </table>
             {% if review.comment %}
-                <p>{{ review.comment|linebreaks }}</p>
+                <p>{{ review.render_comment|linebreaks }}</p>
             {% endif %}
         {% else %}
             <p>{% trans 'Not reviewed yet.' %}</p>

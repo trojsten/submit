@@ -22,6 +22,8 @@ SUBMIT_PREFETCH_DATA_FOR_SCORE_CALCULATION = getattr(django_settings,
                                                      'SUBMIT_PREFETCH_DATA_FOR_SCORE_CALCULATION',
                                                      'submit.defaults.prefetch_data_for_score_calculation')
 SUBMIT_DISPLAY_SCORE = getattr(django_settings, 'SUBMIT_DISPLAY_SCORE', 'submit.defaults.display_score')
+SUBMIT_RENDER_REVIEW_COMMENT = getattr(django_settings, 'SUBMIT_RENDER_REVIEW_COMMENT',
+                                       'submit.defaults.render_review_comment')
 
 # Override `SubmitReceiver.__str__()` to be more descriptive than '{}'.format(id)
 SUBMIT_DISPLAY_SUBMIT_RECEIVER_NAME = getattr(django_settings, 'SUBMIT_DISPLAY_SUBMIT_RECEIVER_NAME',

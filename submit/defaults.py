@@ -35,6 +35,10 @@ def display_score(review):
     return str(review.score)
 
 
+def render_review_comment(review):
+    return review.comment
+
+
 def submit_receiver_type(receiver):
     if receiver.send_to_judge:
         return 'source'
