@@ -1,30 +1,36 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-11 19:07+0100\n"
+"POT-Creation-Date: 2017-02-17 21:06+0100\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: commands.py:22
+#: admin.py:57
+msgid ""
+"Basic receiver settings will be set based on selected type. For advanced "
+"settings click \"Change\".<br />(When adding a new receiver, click \"Save "
+"and continue editing\" first.)"
+msgstr ""
+"Základné nastavenia typu submitov budú určené na základe zvolenej možnosti.<br />"
+"Pre dalšie nastavenia kliknite na \"Zmeniť\".<br />"
+"(Ak pridávate nový typ submitov k úlohe, kliknite najprv na \"Uložiť a pokračovať v úpravách\"."
+
+#: commands.py:23
 msgid "Resubmit successful."
 msgstr "Úspešne znovu-odovzdané."
 
-#: commands.py:24
+#: commands.py:25
 msgid "Resubmit not successful. Judge unavailable."
 msgstr "Resubmit sa nepodaril. Testovač nie je dostupný."
 
-#: commands.py:53
+#: commands.py:54
 msgid "Failed submits"
 msgstr "Nepodarené submity"
 
-#: commands.py:55
+#: commands.py:56
 msgid "Everything OK"
 msgstr "Všetko v poriadku"
-
-#: constants.py:9
-msgid "Deduce from extension"
-msgstr "Zisti podľa prípony"
 
 #: constants.py:26
 msgid "OK"
@@ -74,6 +80,35 @@ msgstr "Protokol je nečitateľný"
 msgid "Reviewed"
 msgstr "Ohodnotené"
 
+#: constants.py:74
+msgid "Manual review"
+msgstr "Ohodnotené človekom"
+
+#: constants.py:75
+msgid "Judge test results"
+msgstr "Výsledky automatického testovania"
+
+#: constants.py:76
+msgid "Judge communication"
+msgstr "Komunikácia s testovačom"
+
+#: constants.py:82
+msgid "Deduce from extension"
+msgstr "Zisti podľa prípony"
+
+#: defaults.py:24
+#, python-brace-format
+msgid ""
+"Submit successful. Testing protocol will be soon available <a href="
+"\"{link}\">here</a>."
+msgstr ""
+"Úspešne odovzdané. Protokol z testovania bude čoskoro dostupný <a href="
+"\"{link}\">tu</a>."
+
+#: defaults.py:27
+msgid "Submit successful."
+msgstr "Úspešne odovzdané."
+
 #: forms.py:24
 msgid "No file was submitted"
 msgstr "Nebol odovzdaný žiadny súbor"
@@ -83,24 +118,90 @@ msgstr "Nebol odovzdaný žiadny súbor"
 msgid "Invalid file extension %(extension)s"
 msgstr "Typ súboru %(extension)s nie je podporovaný"
 
-#: forms.py:62
+#: forms.py:60
 msgid "Language"
 msgstr "Jazyk"
 
-#: forms.py:76
+#: forms.py:73
 msgid "Automatic language discovery failed. Unknown language extension."
 msgstr ""
 "Automatické určenie jazyka zlyhalo kvôli neznámej/nepodporovanej koncovke."
 
-#: models.py:90
+#: models.py:40
+#, python-format
+msgid "Language \"%(lang)s\" is not supported by judge."
+msgstr "Jazyk \"%(lang)s\" nie je podporovaný testovačom."
+
+#: models.py:50
+msgid "Check to collect files via submit form."
+msgstr "Zaškrtnite pre vykreslenie formuláru na odovzdávanie riešení."
+
+#: models.py:52
+msgid "Text that appears on the left from submit form."
+msgstr "Text sa objaví naľavo od formulára."
+
+#: models.py:54
+msgid ""
+"List of comma separated extensions e.g. \"txt, pdf, doc\".<br />Leave blank "
+"to accept any extension."
+msgstr ""
+"Zoznam čiarkou oddelených koncoviek napr.: \"txt, pdf, doc\".<br />"
+"Ak zostane prázdne, budú akceptované všetky typy súborov."
+
+#: models.py:57
+#, python-format
+msgid ""
+"List of comma separated programming language extensions e.g. \"c, cc, py, hs"
+"\".<br />Use languages supported by the judge from: %(languages)s.<br />When "
+"languages are set, field \"extensions\" is ignored."
+msgstr ""
+"Zoznam čiarkou oddelených programovacích jazykov napr.: \"c, cc, py\"<br />"
+"Použite jazyky podporované testovačom z množiny: %(languages)s.<br />"
+"Ked vyberiete aspoň jeden programovací jazyk, políčko  \"extensions\" bude ignorované."
+
+#: models.py:63
+msgid ""
+"URL for external submits. A button with link will be rendered in the submit "
+"form."
+msgstr "URL pre externé odovzdávanie. Na stránke sa vykreslí tlačítko s odkazom."
+
+
+#: models.py:66
+msgid ""
+"Secret key allowing external submits via API, will be generated "
+"automatically."
+msgstr ""
+"Token na komunikáciu s externou aplikáciou cez API.<br />"
+"Token bude vygenerovaný automaticky."
+
+#: models.py:68
+msgid "Check to send submits to automated judge."
+msgstr "Zaškrtnite ak chcete riešenia odosielať na automatické otestovanie."
+
+#: models.py:70
+msgid ""
+"If left blank, and send_to_judge is checked, this field will be set "
+"automatically."
+msgstr ""
+"Ak zaškrtnete odosielanie na testovač a necháte toto políčko prázdne, nastaví sa automaticky."
+
+#: models.py:72
+msgid "Check to display protocol details to all users."
+msgstr "Zaškrtnite pre zobrazenie detailov testovacieho protokolu pre všetkých používateľov."
+
+#: models.py:74
+msgid "Check to render submitted file as a part of web page for submit."
+msgstr "Zaškrtnite pre zobrazenie odovzdaného súboru priamo na stránke submitu."
+
+#: models.py:135
 msgid "no"
 msgstr "nie"
 
-#: models.py:91
+#: models.py:136
 msgid "with penalization"
 msgstr "s penalizáciou"
 
-#: models.py:92
+#: models.py:137
 msgid "yes"
 msgstr "áno"
 
@@ -142,19 +243,19 @@ msgstr "Body"
 msgid "Actions"
 msgstr "Akcie"
 
-#: templates/submit/parts/submit_list.html:53
+#: templates/submit/parts/submit_list.html:55
 msgid "Not reviewed"
 msgstr "Neohodnotené"
 
-#: templates/submit/parts/submit_list.html:56
+#: templates/submit/parts/submit_list.html:58
 msgid "Not accepted"
 msgstr "Neakceptované"
 
-#: templates/submit/parts/submit_list.html:58
+#: templates/submit/parts/submit_list.html:60
 msgid "Accepted with penalization"
 msgstr "Akceptované s penalizáciou"
 
-#: templates/submit/parts/submit_list.html:66
+#: templates/submit/parts/submit_list.html:64
 msgid "View"
 msgstr "Detaily"
 
@@ -254,19 +355,6 @@ msgstr "Protokol"
 msgid "All submits"
 msgstr "Všetky submity"
 
-#: views.py:37
-#, python-brace-format
-msgid ""
-"Submit successful. Testing protocol will be soon available <a href="
-"\"{link}\">here</a>."
-msgstr ""
-"Úspešne odovzdané. Protokol z testovania bude čoskoro dostupný <a href="
-"\"{link}\">tu</a>."
-
-#: views.py:40
-msgid "Submit successful."
-msgstr "Úspešne odovzdané."
-
-#: views.py:75
+#: views.py:52
 msgid "Upload to judge was not successful."
 msgstr "Pri odosielaní na testovač nastala chyba."

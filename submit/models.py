@@ -54,7 +54,7 @@ class SubmitReceiver(models.Model):
         'List of comma separated extensions e.g. "txt, pdf, doc".<br />'
         'Leave blank to accept any extension.'))
     languages = models.CharField(max_length=256, blank=True, default='', validators=[validate_languages], help_text=_(
-        'List of comma separated programming language extensions e.g. "c, cpp, py, hs".<br />'
+        'List of comma separated programming language extensions e.g. "c, cc, py, hs".<br />'
         'Use languages supported by the judge from: %(languages)s.<br />'
         'When languages are set, field "extensions" is ignored.'
         ) % {'languages': ', '.join(constants.LANGUAGE_IDENTIFIERS)})
