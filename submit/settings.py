@@ -4,9 +4,6 @@ SUBMIT_TASK_MODEL = getattr(django_settings, 'SUBMIT_TASK_MODEL', 'submit.BaseTa
 
 SUBMIT_PATH = getattr(django_settings, 'SUBMIT_PATH', 'submit/')
 
-# DB can hold names with length up to 128, some space is reserved for extension mapping
-SUBMIT_UPLOADED_FILENAME_MAXLENGTH = int(getattr(django_settings, 'SUBMIT_UPLOADED_FILENAME_MAXLENGTH', 120))
-
 SUBMIT_VIEWABLE_EXTENSIONS = getattr(django_settings, 'SUBMIT_VIEWABLE_EXTENSIONS', ('.pdf', '.txt'))
 
 JUDGE_INTERFACE_IDENTITY = getattr(django_settings, 'JUDGE_INTERFACE_IDENTITY', 'TESTOVAC')
@@ -16,9 +13,9 @@ JUDGE_PORT = getattr(django_settings, 'JUDGE_PORT', 12347)
 JUDGE_DEFAULT_INPUTS_FOLDER_FOR_RECEIVER = getattr(django_settings, 'JUDGE_DEFAULT_INPUTS_FOLDER_FOR_RECEIVER',
                                                    'submit.defaults.default_inputs_folder_at_judge')
 
-# Override view methods to set `submit.is_accepted` field or submit success message
-SUBMIT_POST_SUBMIT_FORM_VIEW = getattr(django_settings, 'SUBMIT_POST_SUBMIT_FORM_VIEW',
-                                       'submit.views.PostSubmitForm')
+SUBMIT_IS_SUBMIT_ACCEPTED = getattr(django_settings, 'SUBMIT_IS_SUBMIT_ACCEPTED', 'submit.defaults.is_submit_accepted')
+SUBMIT_FORM_SUCCESS_MESSAGE = getattr(django_settings, 'SUBMIT_FORM_SUCCESS_MESSAGE',
+                                      'submit.defaults.form_success_message')
 
 # Format of displayed score can depend on other models
 SUBMIT_PREFETCH_DATA_FOR_SCORE_CALCULATION = getattr(django_settings,

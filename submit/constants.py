@@ -5,8 +5,8 @@ REVIEWED_FILE_EXTENSION = '.review'
 TESTING_PROTOCOL_EXTENSION = '.protocol'
 TESTING_RAW_EXTENSION = '.raw'
 
-DEDUCE_LANGUAGE_AUTOMATICALLY_OPTION = '.'
-DEDUCE_LANGUAGE_AUTOMATICALLY_VERBOSE = _('Deduce from extension')
+# DB can hold names with length up to 128, some space is reserved for extension mapping
+SUBMIT_UPLOADED_FILENAME_MAXLENGTH = 120
 
 
 class JudgeTestResult(object):
@@ -78,6 +78,8 @@ class ReviewResponse(JudgeTestResult):
 
         return choices
 
+DEDUCE_LANGUAGE_AUTOMATICALLY_OPTION = '.'
+DEDUCE_LANGUAGE_AUTOMATICALLY_VERBOSE = _('Deduce from extension')
 
 # language_identifier: (language_name, extension_expected_by_judge, list_of_extensions)
 LANGUAGE_DEFINITIONS = {

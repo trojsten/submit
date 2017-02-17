@@ -3,16 +3,15 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.utils.html import format_html
-from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.utils.module_loading import import_string
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response as APIResponse
 
+import submit.settings as submit_settings
 from .constants import JudgeTestResult, ReviewResponse
 from .models import SubmitReceiver, Submit, Review
 from .forms import submit_form_factory
@@ -21,65 +20,38 @@ from .judge_helpers import create_review_and_send_to_judge, parse_protocol, Judg
 from .serializers import ExternalSubmitSerializer
 
 
-class PostSubmitForm(View):
-    login_required = True
+@login_required
+@require_POST
+def post_submit_form(request, receiver_id):
+    receiver = get_object_or_404(SubmitReceiver, pk=receiver_id)
 
-    def is_submit_accepted(self, submit):
-        """
-        Override this method to decide which submits will be accepted, penalized or not accepted.
-        This method is called after the submit is created, but before it is saved in database.
-        E.g. submits after deadline are not accepted.
-        """
-        return Submit.ACCEPTED
+    if not receiver.can_post_submit(request.user):
+        raise PermissionDenied()
 
-    def get_success_message(self, submit):
-        """
-        This message will be added to `messages` after successful submit.
-        """
-        if submit.receiver.send_to_judge:
-            return format_html(
-                    _('Submit successful. Testing protocol will be soon available <a href="{link}">here</a>.'),
-                    link=reverse('view_submit', args=[submit.id])
-            )
-        return _('Submit successful.')
+    if receiver.has_form:
+        form = submit_form_factory(request.POST, request.FILES, receiver=receiver)
+    else:
+        raise PermissionDenied()
 
-    def send_to_judge(self, submit):
-        create_review_and_send_to_judge(submit)
+    if form.is_valid():
+        submit = create_submit(user=request.user, receiver=receiver, sfile=request.FILES['submit_file'])
+    else:
+        for field in form:
+            for error in field.errors:
+                messages.add_message(request, messages.ERROR, u"%s: %s" % (field.label, error))
+        for error in form.non_field_errors():
+            messages.add_message(request, messages.ERROR, error)
+        return redirect(request.POST['redirect_to'])
 
-    def post(self, request, receiver_id):
-        receiver = get_object_or_404(SubmitReceiver, pk=receiver_id)
-
-        if not receiver.can_post_submit(request.user):
-            raise PermissionDenied()
-
-        if receiver.has_form:
-            form = submit_form_factory(request.POST, request.FILES, receiver=receiver)
-        else:
-            raise PermissionDenied()
-
-        if form.is_valid():
-            submit = create_submit(user=request.user,
-                                   receiver=receiver,
-                                   is_accepted_method=self.is_submit_accepted,
-                                   sfile=request.FILES['submit_file'],
-                                   )
-        else:
-            for field in form:
-                for error in field.errors:
-                    messages.add_message(request, messages.ERROR, u"%s: %s" % (field.label, error))
-            for error in form.non_field_errors():
-                messages.add_message(request, messages.ERROR, error)
+    if receiver.send_to_judge:
+        try:
+            create_review_and_send_to_judge(submit)
+        except JudgeConnectionError:
+            messages.add_message(request, messages.ERROR, _('Upload to judge was not successful.'))
             return redirect(request.POST['redirect_to'])
 
-        if receiver.send_to_judge:
-            try:
-                self.send_to_judge(submit)
-            except JudgeConnectionError:
-                messages.add_message(request, messages.ERROR, _('Upload to judge was not successful.'))
-                return redirect(request.POST['redirect_to'])
-
-        messages.add_message(request, messages.SUCCESS, self.get_success_message(submit))
-        return redirect(request.POST['redirect_to'])
+    messages.add_message(request, messages.SUCCESS, import_string(submit_settings.SUBMIT_FORM_SUCCESS_MESSAGE)(submit))
+    return redirect(request.POST['redirect_to'])
 
 
 @login_required
@@ -157,21 +129,12 @@ def external_submit(request):
     validated = serializer.validated_data
 
     receiver = SubmitReceiver.objects.get(token=validated['token'])
-
     if not receiver.allow_external_submits or not receiver.can_post_submit(validated['user']):
         raise PermissionDenied()
 
-    submit = Submit(
-        receiver=receiver,
-        user=validated['user'],
-    )
+    submit = create_submit(user=validated['user'], receiver=receiver)
     submit.save()
-
-    review = Review(
-        submit=submit,
-        score=validated['score'],
-        short_response=ReviewResponse.OK,
-    )
+    review = Review(submit=submit, score=validated['score'], short_response=ReviewResponse.OK)
     review.save()
 
     return APIResponse()
