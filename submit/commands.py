@@ -14,7 +14,7 @@ def rejudge_submit(request, submit_id):
     if not submit.receiver.has_admin_privileges(request.user):
         raise PermissionDenied
 
-    if not submit.receiver.configuration.get('send_to_judge', False):
+    if not submit.receiver.send_to_judge:
         raise Http404
 
     try:
@@ -35,7 +35,7 @@ def rejudge_receiver_submits(request, receiver_id):
     if not receiver.has_admin_privileges(request.user):
         raise PermissionDenied
 
-    if not receiver.configuration.get('send_to_judge', False):
+    if not receiver.send_to_judge:
         raise Http404
 
     submits = Submit.objects\

@@ -10,11 +10,11 @@ def display_score(review):
 
 
 def submit_receiver_type(receiver):
-    if receiver.configuration.get('send_to_judge', False):
+    if receiver.send_to_judge:
         return 'source'
-    if 'link' in receiver.configuration:
+    if receiver.external_link:
         return 'link'
-    if 'form' in receiver.configuration:
+    if receiver.has_form:
         return 'description'
     return 'other'
 

@@ -1,41 +1,71 @@
-from django import forms
 from django.contrib import admin
+from django.db import models
+from django.forms import TextInput, ChoiceField, ModelForm, HiddenInput
+from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
-from submit.models import SubmitReceiverTemplate, SubmitReceiver, Submit, Review
-
-
-class SubmitReceiverTemplateAdmin(admin.ModelAdmin):
-    pass
-
-
-class LoadConfigurationFromTemplate(forms.Select):
-    class Media:
-        js = ('submit/load-configuration-from-template.js', )
-
-
-class SubmitReceiverForm(forms.ModelForm):
-    receiver_template = forms.ChoiceField(
-        choices=[],
-        widget=LoadConfigurationFromTemplate()
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(SubmitReceiverForm, self).__init__(*args, **kwargs)
-        self.fields['receiver_template'].choices = ((x.id, str(x)) for x in SubmitReceiverTemplate.objects.all())
-
-    class Meta:
-        model = SubmitReceiver
-        fields = ('task', 'receiver_template', 'configuration')
-        widgets = {
-            'configuration': forms.Textarea(attrs={'rows': 15, 'cols': 50})
-        }
+from submit import settings as submit_settings
+from submit.models import SubmitReceiver, Submit, Review
 
 
 class SubmitReceiverAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'task')
     search_fields = ('task__name', )
-    form = SubmitReceiverForm
+
+    fieldsets = (
+        (None, {
+            'fields': ('task', )
+        }),
+        ('Form options', {
+            'fields': ('has_form', 'caption', 'extensions', 'languages', 'external_link'),
+        }),
+        ('Judge options', {
+            'fields': ('send_to_judge', 'inputs_folder_at_judge'),
+        }),
+        ('Submit page options', {
+            'fields': ('show_all_details', 'show_submitted_file'),
+        }),
+    )
+
+
+class ReceiverFromTemplateForm(ModelForm):
+    receiver_template = ChoiceField(
+        choices=[(None, '')] + [(k, k) for k in submit_settings.SUBMIT_RECEIVER_TEMPLATES.keys()],
+        required=False,
+        label='Submit receiver template',
+        help_text=_('Basic receiver settings will be set based on selected type. For advanced settings click "Change".'
+                    '<br />(When adding a new receiver, click "Save and continue editing" first.)')
+    )
+
+    class Meta:
+        model = SubmitReceiver
+        exclude = []
+        widgets = {field_name: HiddenInput() for field_name in SubmitReceiver._meta.get_all_field_names()}
+
+    def clean(self):
+        cleaned_data = super(ReceiverFromTemplateForm, self).clean()
+        template = self.cleaned_data.get('receiver_template', None)
+        if template:
+            cleaned_data.update(submit_settings.SUBMIT_RECEIVER_TEMPLATES[template])
+        return cleaned_data
+
+
+class SubmitReceiverFromTemplateInline(admin.StackedInline):
+    model = SubmitReceiver
+    extra = 0
+    show_change_link = True
+    form = ReceiverFromTemplateForm
+
+
+class SubmitReceiverFullInline(admin.TabularInline):
+    model = SubmitReceiver
+    extra = 0
+    show_change_link = True
+
+    formfield_overrides = {
+        models.CharField: {'widget': TextInput(attrs={'size': '15'})},
+    }
+
 
 
 class ReviewInline(admin.StackedInline):
@@ -86,6 +116,5 @@ class SubmitAdmin(ViewOnSiteMixin, admin.ModelAdmin):
         return review.display_score() if review is not None else ''
 
 
-admin.site.register(SubmitReceiverTemplate, SubmitReceiverTemplateAdmin)
 admin.site.register(SubmitReceiver, SubmitReceiverAdmin)
 admin.site.register(Submit, SubmitAdmin)

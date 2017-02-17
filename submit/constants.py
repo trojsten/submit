@@ -77,3 +77,26 @@ class ReviewResponse(JudgeTestResult):
         )
 
         return choices
+
+
+# language_identifier: (language_name, extension_expected_by_judge, list_of_extensions)
+LANGUAGE_DEFINITIONS = {
+    'cc':   ('C++',         '.cc',      ('.cc', '.cpp')),
+    'pas':  ('Pascal',      '.pas',     ('.pas', '.dpr')),
+    'c':    ('C',           '.c',       ('.c',)),
+    'py':   ('Python 3.4',  '.py',      ('.py', '.py3')),
+    'hs':   ('Haskell',     '.hs',      ('.hs', )),
+    'cs':   ('C#',          '.cs',      ('.cs', )),
+    'java': ('Java',        '.java',    ('.java', )),
+}
+
+LANGUAGE_IDENTIFIERS = list()
+LANGUAGE_EXTENSIONS = list()
+LANGUAGE_EXTENSION_MAPPING = dict()
+LANGUAGE_CHOICE_TEXTS = dict()
+
+for identifier, (name, judge_extension, extensions) in LANGUAGE_DEFINITIONS.items():
+    LANGUAGE_IDENTIFIERS.append(identifier)
+    LANGUAGE_EXTENSIONS.extend(extensions)
+    LANGUAGE_EXTENSION_MAPPING.update({extension: judge_extension for extension in extensions})
+    LANGUAGE_CHOICE_TEXTS[identifier] = '{} ({})'.format(name, '/'.join(extensions))

@@ -19,12 +19,9 @@ def submit_form(receiver, redirect, user, caption=None):
         'redirect_to': redirect,
     }
 
-    conf = receiver.configuration
-    if 'form' in conf:
-        data['submit_form'] = submit_form_factory(configuration=conf['form'])
-        data['caption'] = conf['form'].get('caption', None) or caption
-    if 'link' in conf:
-        data['submit_link'] = conf['link']
+    if receiver.has_form:
+        data['submit_form'] = submit_form_factory(receiver=receiver)
+        data['caption'] = receiver.caption or caption
 
     return data
 

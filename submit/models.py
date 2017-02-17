@@ -1,7 +1,7 @@
 import os
 from django.conf import settings as django_settings
-from django.contrib.postgres.fields import JSONField
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.query import Prefetch
 from django.utils.encoding import python_2_unicode_compatible
@@ -26,39 +26,61 @@ class BaseTask(models.Model):
         abstract = True
 
 
-class SubmitConfig(models.Model):
-    """
-    This is an abstract model providing JSONField to store submit configurations.
-    """
-    configuration = JSONField(default=dict)
-
-    class Meta:
-        abstract = True
+def comma_separated_string_to_list(comma_string):
+    if comma_string.strip() == '':
+        return []
+    return [word.strip() for word in comma_string.split(',')]
 
 
-@python_2_unicode_compatible
-class SubmitReceiverTemplate(SubmitConfig):
-    """
-    When creating a new submit receiver user can choose a template:
-    template.configuration is copied into receiver.configuration thus preserving backwards compatibility,
-    when the template is modified
-    """
-    name = models.CharField(max_length=64)
-
-    class Meta:
-        verbose_name = 'submit receiver template'
-        verbose_name_plural = 'submit receiver templates'
-
-    def __str__(self):
-        return self.name
+def validate_languages(value):
+    for lang in comma_separated_string_to_list(value):
+        if lang not in constants.LANGUAGE_IDENTIFIERS:
+            raise ValidationError(_('Language "%(lang)s" is not supported by judge.'), params={'lang': lang})
 
 
 @python_2_unicode_compatible
-class SubmitReceiver(SubmitConfig):
+class SubmitReceiver(models.Model):
     """
     Submit receiver manages one type of submits for one task.
     """
     task = models.ForeignKey(submit_settings.SUBMIT_TASK_MODEL)
+
+    has_form = models.BooleanField(default=False, help_text=_('Check to collect files via submit form.'))
+    caption = models.CharField(max_length=128, blank=True, default='',
+                               help_text=_('Text that appears on the left from submit form.'))
+    extensions = models.CharField(max_length=256, blank=True, default='', help_text=_(
+        'List of comma separated extensions e.g. "txt, pdf, doc".<br />'
+        'Leave blank to accept any extension.'))
+    languages = models.CharField(max_length=256, blank=True, default='', validators=[validate_languages], help_text=_(
+        'List of comma separated programming language extensions e.g. "c, cpp, py, hs".<br />'
+        'Use languages supported by the judge from: %(languages)s.<br />'
+        'When languages are set, field "extensions" is ignored.'
+        ) % {'languages': ', '.join(constants.LANGUAGE_IDENTIFIERS)})
+
+    external_link = models.CharField(max_length=256, blank=True, default='', help_text=_(
+        'URL for external submits. A button with link will be rendered in the submit form.'))
+
+    send_to_judge = models.BooleanField(default=False, help_text=_('Check to send submits to automated judge.'))
+    inputs_folder_at_judge = models.CharField(max_length=128, blank=True, default='',  help_text=_(
+        'If left blank, and send_to_judge is checked, this field will be set automatically.'))
+
+    show_all_details = models.BooleanField(default=False, help_text=_('Check to display protocol details to all users.'))
+    show_submitted_file = models.BooleanField(default=False, help_text=_(
+        'Check to render submitted file as a part of web page for submit.'))
+
+    def save(self, *args, **kwargs):
+        super(SubmitReceiver, self).save(*args, **kwargs)
+
+        if not self.inputs_folder_at_judge and self.send_to_judge:
+            self.inputs_folder_at_judge = import_string(submit_settings.JUDGE_DEFAULT_INPUTS_FOLDER_FOR_RECEIVER)(self)
+
+        super(SubmitReceiver, self).save(*args, **kwargs)
+
+    def get_languages(self):
+        return comma_separated_string_to_list(self.languages)
+
+    def get_extensions(self):
+        return ['.' + e for e in comma_separated_string_to_list(self.extensions)]
 
     class Meta:
         verbose_name = 'submit receiver'

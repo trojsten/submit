@@ -1,12 +1,9 @@
 from django.utils import timezone
 
-from django.conf import settings
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from submit.models import Submit
 from submit.views import PostSubmitForm
-
-from submit.defaults import submit_receiver_type
 
 
 class PostSubmitFormCustomized(PostSubmitForm):

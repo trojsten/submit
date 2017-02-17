@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from .constants import JudgeTestResult, ReviewResponse
-from .models import SubmitReceiverTemplate, SubmitReceiver, Submit, Review
+from .models import SubmitReceiver, Submit, Review
 from .forms import submit_form_factory
 from .submit_helpers import create_submit, write_chunks_to_file, send_file
 from .judge_helpers import create_review_and_send_to_judge, parse_protocol, JudgeConnectionError
@@ -32,7 +32,7 @@ class PostSubmitForm(View):
         """
         This message will be added to `messages` after successful submit.
         """
-        if submit.receiver.configuration.get('send_to_judge', False):
+        if submit.receiver.send_to_judge:
             return format_html(
                     _('Submit successful. Testing protocol will be soon available <a href="{link}">here</a>.'),
                     link=reverse('view_submit', args=[submit.id])
@@ -44,13 +44,12 @@ class PostSubmitForm(View):
 
     def post(self, request, receiver_id):
         receiver = get_object_or_404(SubmitReceiver, pk=receiver_id)
-        config = receiver.configuration
 
         if not receiver.can_post_submit(request.user):
             raise PermissionDenied()
 
-        if 'form' in config:
-            form = submit_form_factory(request.POST, request.FILES, configuration=config['form'])
+        if receiver.has_form:
+            form = submit_form_factory(request.POST, request.FILES, receiver=receiver)
         else:
             raise PermissionDenied()
 
@@ -68,7 +67,7 @@ class PostSubmitForm(View):
                 messages.add_message(request, messages.ERROR, error)
             return redirect(request.POST['redirect_to'])
 
-        if config.get('send_to_judge', False):
+        if receiver.send_to_judge:
             try:
                 self.send_to_judge(submit)
             except JudgeConnectionError:
@@ -87,22 +86,20 @@ def view_submit(request, submit_id):
     if submit.user != request.user and not user_has_admin_privileges:
         raise PermissionDenied()
 
-    conf = submit.receiver.configuration
+    receiver = submit.receiver
     review = submit.last_review
     data = {
         'submit': submit,
         'review': review,
         'user_has_admin_privileges': user_has_admin_privileges,
-        'show_submitted_file': conf.get('show_submitted_file', False),
-        'protocol_expected': conf.get('send_to_judge', False),
     }
 
-    if data['show_submitted_file']:
+    if receiver.show_submitted_file:
         with open(submit.file_path(), 'r') as submitted_file:
             data['submitted_file'] = submitted_file.read().decode('utf-8', 'replace')
 
-    if data['protocol_expected'] and review and review.protocol_exists():
-        force_show_details = conf.get('show_all_details', False) or user_has_admin_privileges
+    if receiver.send_to_judge and review and review.protocol_exists():
+        force_show_details = receiver.show_all_details or user_has_admin_privileges
         data['protocol'] = parse_protocol(review.protocol_path(), force_show_details)
         data['result'] = JudgeTestResult
 
@@ -146,15 +143,3 @@ def receive_protocol(request):
     review.save()
 
     return HttpResponse("")
-
-
-@login_required
-def get_receiver_templates(request):
-    """
-    Send receiver templates to JavaScript at page admin:submit_submitreceiver_change/add
-    """
-    if not request.user.is_staff:
-        raise PermissionDenied()
-    templates = SubmitReceiverTemplate.objects.all()
-    templates = {template.id: template.configuration for template in templates}
-    return JsonResponse(templates)

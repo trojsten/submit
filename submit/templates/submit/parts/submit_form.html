@@ -14,9 +14,9 @@
         </form>
     {% endif %}
 
-    {% if submit_link %}
+    {% if receiver.external_link %}
         <p>{% trans 'Use a special page to submit.' %}</p>
-        <a class="btn btn-primary" href="{{ submit_link }}">{% trans 'Page with external submit' %}</a>
+        <a class="btn btn-primary" href="{{ receiver.external_link }}">{% trans 'Page with external submit' %}</a>
     {% endif %}
 {% else %}
     <p class="text-danger">{% trans "You can't submit solutions for this task." %}</p>
