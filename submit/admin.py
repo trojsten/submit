@@ -75,6 +75,7 @@ class SubmitReceiverFromTemplateInline(admin.StackedInline):
     model = SubmitReceiver
     extra = 0
     show_change_link = True
+    exclude = ('token',)
     form = ReceiverFromTemplateForm
 
 

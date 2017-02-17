@@ -62,7 +62,7 @@ class SubmitReceiver(models.Model):
     external_link = models.CharField(max_length=256, blank=True, default='', help_text=_(
         'URL for external submits. A button with link will be rendered in the submit form.'))
     allow_external_submits = models.BooleanField(default=False)
-    token = models.CharField(verbose_name='token', max_length=64, unique=True, help_text=_(
+    token = models.CharField(verbose_name='token', max_length=64, unique=True, blank=True, help_text=_(
         'Secret key allowing external submits via API, will be generated automatically.'))
 
     send_to_judge = models.BooleanField(default=False, help_text=_('Check to send submits to automated judge.'))
@@ -74,13 +74,11 @@ class SubmitReceiver(models.Model):
         'Check to render submitted file as a part of web page for submit.'))
 
     def save(self, *args, **kwargs):
-        super(SubmitReceiver, self).save(*args, **kwargs)
+        if not self.token:
+            self.token = self.generate_token()
 
         if not self.inputs_folder_at_judge and self.send_to_judge:
             self.inputs_folder_at_judge = import_string(submit_settings.JUDGE_DEFAULT_INPUTS_FOLDER_FOR_RECEIVER)(self)
-
-        if not self.token:
-            self.token = self.generate_token()
 
         super(SubmitReceiver, self).save(*args, **kwargs)
 

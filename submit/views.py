@@ -156,7 +156,10 @@ def external_submit(request):
     serializer.is_valid(raise_exception=True)
     validated = serializer.validated_data
 
-    receiver = SubmitReceiver.objexts.get(token=validated['token'])
+    receiver = SubmitReceiver.objects.get(token=validated['token'])
+
+    if not receiver.allow_external_submits or not receiver.can_post_submit(validated['user']):
+        raise PermissionDenied()
 
     submit = Submit(
         receiver=receiver,

@@ -16,6 +16,4 @@ class ExternalSubmitSerializer(serializers.Serializer):
             receiver = SubmitReceiver.objects.get(token=value)
         except ObjectDoesNotExist:
             raise serializers.ValidationError('Token does not belong to any submit receiver.')
-        if not receiver.allow_external_submits:
-            raise serializers.ValidationError('This submit receiver does not accept external submits.')
         return value

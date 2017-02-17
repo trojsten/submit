@@ -12,6 +12,7 @@ SUBMIT_VIEWABLE_EXTENSIONS = getattr(django_settings, 'SUBMIT_VIEWABLE_EXTENSION
 JUDGE_INTERFACE_IDENTITY = getattr(django_settings, 'JUDGE_INTERFACE_IDENTITY', 'TESTOVAC')
 JUDGE_ADDRESS = getattr(django_settings, 'JUDGE_ADDRESS', '127.0.0.1')
 JUDGE_PORT = getattr(django_settings, 'JUDGE_PORT', 12347)
+# SubmitReceiver object may not be in database yet when this function is called
 JUDGE_DEFAULT_INPUTS_FOLDER_FOR_RECEIVER = getattr(django_settings, 'JUDGE_DEFAULT_INPUTS_FOLDER_FOR_RECEIVER',
                                                    'submit.defaults.default_inputs_folder_at_judge')
 
