@@ -1,6 +1,7 @@
 import os
 
-from django.utils.six.moves import urllib, socketserver as SocketServer
+from django.utils.six.moves import socketserver as SocketServer
+from django.utils.six.moves import urllib
 
 protocol_file_names = {
     'ok': 'OK.protocol',

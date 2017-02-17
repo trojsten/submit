@@ -3,21 +3,23 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.utils.module_loading import import_string
-
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response as APIResponse
 
 import submit.settings as submit_settings
-from .constants import JudgeTestResult, ReviewResponse
-from .models import SubmitReceiver, Submit, Review
-from .forms import submit_form_factory
-from .submit_helpers import create_submit, write_chunks_to_file, send_file
-from .judge_helpers import create_review_and_send_to_judge, parse_protocol, JudgeConnectionError
-from .serializers import ExternalSubmitSerializer
+from submit.constants import JudgeTestResult, ReviewResponse
+from submit.forms import submit_form_factory
+from submit.judge_helpers import (JudgeConnectionError,
+                                  create_review_and_send_to_judge,
+                                  parse_protocol)
+from submit.models import Review, Submit, SubmitReceiver
+from submit.serializers import ExternalSubmitSerializer
+from submit.submit_helpers import (create_submit, send_file,
+                                   write_chunks_to_file)
 
 
 @login_required

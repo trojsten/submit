@@ -1,18 +1,14 @@
 # TODO: Tests independent on example
-import json
 import datetime
+import json
 
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import timezone
-from submit.models import SubmitReceiver
 
 from example.tasks.models import Task
-
-
-def user_cant_post_submit(receiver, user):
-    return False
+from submit.models import SubmitReceiver
 
 
 class ExternalSubmitTests(TestCase):

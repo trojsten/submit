@@ -4,7 +4,8 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 
-from submit.judge_helpers import create_review_and_send_to_judge, JudgeConnectionError
+from submit.judge_helpers import (JudgeConnectionError,
+                                  create_review_and_send_to_judge)
 from submit.models import Submit, SubmitReceiver
 
 

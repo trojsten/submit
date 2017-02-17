@@ -2,8 +2,8 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from submit.models import Submit
 from submit.defaults import form_success_message as default_success_message
+from submit.models import Submit
 
 
 def is_submit_accepted(submit):

@@ -1,7 +1,8 @@
 from django.conf.urls import url
 
-from .views import post_submit_form, view_submit, receive_protocol, download_submit, download_review, external_submit
-from .commands import rejudge_submit
+from submit.commands import rejudge_submit
+from submit.views import (download_review, download_submit, external_submit,
+                          post_submit_form, receive_protocol, view_submit)
 
 urlpatterns = [
     url(r'^post/(?P<receiver_id>\d+)/$', post_submit_form, name='post_submit'),

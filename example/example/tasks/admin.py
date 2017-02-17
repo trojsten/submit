@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 from example.tasks.models import Task
-
 from submit.admin import SubmitReceiverFromTemplateInline
 
 

@@ -2,12 +2,11 @@ import os
 
 from django.http import Http404
 from django.utils.module_loading import import_string
-
 from sendfile import sendfile
 
 import constants
-from . import settings as submit_settings
-from .models import Submit
+from submit import settings as submit_settings
+from submit.models import Submit
 
 
 def add_language_preference_to_filename(filename, language_preference, allowed_languages):

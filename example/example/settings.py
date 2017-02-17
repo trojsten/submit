@@ -1,8 +1,8 @@
 # Django settings for example project.
 
 import os
-from django.contrib.messages import constants as message_constants
 
+from django.contrib.messages import constants as message_constants
 
 PROJECT_DIR, PROJECT_MODULE_NAME = os.path.split(
     os.path.dirname(os.path.abspath(__file__))

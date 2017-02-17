@@ -1,16 +1,15 @@
 import os
-import time
 import socket
+import time
 import xml.etree.ElementTree as ET
 from decimal import Decimal
+
 from unidecode import unidecode
 
-from django.utils.module_loading import import_string
-
-from .constants import JudgeTestResult, ReviewResponse
-from . import settings as submit_settings
-from .submit_helpers import write_chunks_to_file
-from .models import Review
+from submit import settings as submit_settings
+from submit.constants import JudgeTestResult, ReviewResponse
+from submit.models import Review
+from submit.submit_helpers import write_chunks_to_file
 
 
 class JudgeConnectionError(Exception):

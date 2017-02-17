@@ -2,16 +2,16 @@ import binascii
 import os
 
 from django.conf import settings as django_settings
-from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.query import Prefetch
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 
-from . import constants
-from . import settings as submit_settings
+from submit import settings as submit_settings
+from submit import constants
 
 
 class BaseTask(models.Model):

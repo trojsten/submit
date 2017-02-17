@@ -1,11 +1,11 @@
 from django import forms
 from django.contrib import admin
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 
 from submit import settings as submit_settings
-from submit.models import SubmitReceiver, Submit, Review
+from submit.models import Review, Submit, SubmitReceiver
 
 
 class SubmitReceiverAdminForm(forms.ModelForm):

@@ -1,9 +1,10 @@
 import os
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from . import constants
-from .submit_helpers import add_language_preference_to_filename
+from submit import constants
+from submit.submit_helpers import add_language_preference_to_filename
 
 
 class BaseSubmitForm(forms.Form):
