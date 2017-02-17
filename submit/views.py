@@ -10,11 +10,15 @@ from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response as APIResponse
+
 from .constants import JudgeTestResult, ReviewResponse
 from .models import SubmitReceiver, Submit, Review
 from .forms import submit_form_factory
 from .submit_helpers import create_submit, write_chunks_to_file, send_file
 from .judge_helpers import create_review_and_send_to_judge, parse_protocol, JudgeConnectionError
+from .serializers import ExternalSubmitSerializer
 
 
 class PostSubmitForm(View):
@@ -143,3 +147,28 @@ def receive_protocol(request):
     review.save()
 
     return HttpResponse("")
+
+
+@api_view(['POST'])
+@permission_classes([])
+def external_submit(request):
+    serializer = ExternalSubmitSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    validated = serializer.validated_data
+
+    receiver = SubmitReceiver.objexts.get(token=validated['token'])
+
+    submit = Submit(
+        receiver=receiver,
+        user=validated['user'],
+    )
+    submit.save()
+
+    review = Review(
+        submit=submit,
+        score=validated['score'],
+        short_response=ReviewResponse.OK,
+    )
+    review.save()
+
+    return APIResponse()

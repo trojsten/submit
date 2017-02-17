@@ -1,4 +1,6 @@
+import binascii
 import os
+
 from django.conf import settings as django_settings
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
@@ -59,6 +61,9 @@ class SubmitReceiver(models.Model):
 
     external_link = models.CharField(max_length=256, blank=True, default='', help_text=_(
         'URL for external submits. A button with link will be rendered in the submit form.'))
+    allow_external_submits = models.BooleanField(default=False)
+    token = models.CharField(verbose_name='token', max_length=64, unique=True, help_text=_(
+        'Secret key allowing external submits via API, will be generated automatically.'))
 
     send_to_judge = models.BooleanField(default=False, help_text=_('Check to send submits to automated judge.'))
     inputs_folder_at_judge = models.CharField(max_length=128, blank=True, default='',  help_text=_(
@@ -74,7 +79,14 @@ class SubmitReceiver(models.Model):
         if not self.inputs_folder_at_judge and self.send_to_judge:
             self.inputs_folder_at_judge = import_string(submit_settings.JUDGE_DEFAULT_INPUTS_FOLDER_FOR_RECEIVER)(self)
 
+        if not self.token:
+            self.token = self.generate_token()
+
         super(SubmitReceiver, self).save(*args, **kwargs)
+
+    @staticmethod
+    def generate_token():
+        return binascii.hexlify(os.urandom(20)).decode()
 
     def get_languages(self):
         return comma_separated_string_to_list(self.languages)
@@ -190,7 +202,7 @@ class Review(models.Model):
     review.filename is an original name of this file
     """
     submit = models.ForeignKey(Submit)
-    score = models.FloatField()
+    score = models.DecimalField(max_digits=10, decimal_places=5)
     time = models.DateTimeField(auto_now_add=True)
     short_response = models.CharField(max_length=128, blank=True,
                                       choices=constants.ReviewResponse.all_items_as_choices())

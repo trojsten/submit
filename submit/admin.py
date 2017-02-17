@@ -1,6 +1,6 @@
+from django import forms
 from django.contrib import admin
 from django.db import models
-from django.forms import TextInput, ChoiceField, ModelForm, HiddenInput
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
@@ -8,16 +8,37 @@ from submit import settings as submit_settings
 from submit.models import SubmitReceiver, Submit, Review
 
 
+class SubmitReceiverAdminForm(forms.ModelForm):
+    regenerate_token = forms.BooleanField(required=False)
+
+    def save(self, commit=True):
+        instance = super(SubmitReceiverAdminForm, self).save(commit)
+        if self.cleaned_data.get('regenerate_token', False):
+            instance.token = SubmitReceiver.generate_token()
+        if commit:
+            instance.save()
+        return instance
+
+    class Meta:
+        model = SubmitReceiver
+        fields = '__all__'
+
+
 class SubmitReceiverAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'task')
     search_fields = ('task__name', )
 
+    readonly_fields = ('token', )
+    form = SubmitReceiverAdminForm
     fieldsets = (
         (None, {
             'fields': ('task', )
         }),
         ('Form options', {
-            'fields': ('has_form', 'caption', 'extensions', 'languages', 'external_link'),
+            'fields': ('has_form', 'caption', 'extensions', 'languages'),
+        }),
+        ('External submits options', {
+            'fields': ('external_link', ('allow_external_submits', 'regenerate_token'), 'token'),
         }),
         ('Judge options', {
             'fields': ('send_to_judge', 'inputs_folder_at_judge'),
@@ -28,8 +49,8 @@ class SubmitReceiverAdmin(admin.ModelAdmin):
     )
 
 
-class ReceiverFromTemplateForm(ModelForm):
-    receiver_template = ChoiceField(
+class ReceiverFromTemplateForm(forms.ModelForm):
+    receiver_template = forms.ChoiceField(
         choices=[(None, '')] + [(k, k) for k in submit_settings.SUBMIT_RECEIVER_TEMPLATES.keys()],
         required=False,
         label='Submit receiver template',
@@ -39,8 +60,8 @@ class ReceiverFromTemplateForm(ModelForm):
 
     class Meta:
         model = SubmitReceiver
-        exclude = []
-        widgets = {field_name: HiddenInput() for field_name in SubmitReceiver._meta.get_all_field_names()}
+        fields = '__all__'
+        widgets = {field_name: forms.HiddenInput() for field_name in SubmitReceiver._meta.get_all_field_names()}
 
     def clean(self):
         cleaned_data = super(ReceiverFromTemplateForm, self).clean()
@@ -61,11 +82,10 @@ class SubmitReceiverFullInline(admin.TabularInline):
     model = SubmitReceiver
     extra = 0
     show_change_link = True
-
+    exclude = ('token', )
     formfield_overrides = {
-        models.CharField: {'widget': TextInput(attrs={'size': '15'})},
+        models.CharField: {'widget': forms.TextInput(attrs={'size': '15'})},
     }
-
 
 
 class ReviewInline(admin.StackedInline):
