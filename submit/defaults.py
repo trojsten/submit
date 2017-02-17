@@ -40,12 +40,14 @@ def render_review_comment(review):
 
 
 def submit_receiver_type(receiver):
+    if '.zip' in receiver.get_extensions() and receiver.send_to_judge:
+        return 'testable zip'
     if receiver.send_to_judge:
         return 'source'
-    if receiver.external_link:
-        return 'link'
     if receiver.has_form:
         return 'description'
+    if receiver.external_link or receiver.allow_external_submits:
+        return 'external'
     return 'other'
 
 

@@ -61,7 +61,7 @@ class ReceiverFromTemplateForm(forms.ModelForm):
     class Meta:
         model = SubmitReceiver
         fields = '__all__'
-        widgets = {field_name: forms.HiddenInput() for field_name in SubmitReceiver._meta.get_all_field_names()}
+        widgets = {field.name: forms.HiddenInput() for field in SubmitReceiver._meta.get_fields()}
 
     def clean(self):
         cleaned_data = super(ReceiverFromTemplateForm, self).clean()
