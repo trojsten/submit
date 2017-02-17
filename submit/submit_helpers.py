@@ -2,7 +2,7 @@ import os
 from django.http import Http404
 from sendfile import sendfile
 
-import constants
+from . import constants
 from . import settings as submit_settings
 from .models import Submit
 
