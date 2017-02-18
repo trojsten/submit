@@ -2,7 +2,7 @@
 Reusable django application for handling submits, reviews and communication with automatic judge.
 
 ### submits
-`SubmitReceiver` configures one type of submits (one submit form) for a specific object (e.g. task).
+`SubmitReceiver` configures one type of submits (one submit form) for a specific task.
 
 `Submit` belongs to one `SubmitReceiver` and stores data about user's submission: file, time
 
