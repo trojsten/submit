@@ -29,7 +29,7 @@ class DummyTester(SocketServer.BaseRequestHandler):
         submit_type = os.path.splitext(submit_file_name)[0].lower()
         protocol_file_name = protocol_file_names.get(submit_type, default_protocol)
 
-        with open(protocol_file_name, 'r') as protocol_file:
+        with open(protocol_file_name, 'rb') as protocol_file:
             protocol_data = protocol_file.read()
 
         data = urllib.parse.urlencode({

@@ -109,6 +109,7 @@ class ReviewInline(admin.StackedInline):
     extra = 0
 
 
+
 class ViewOnSiteMixin(object):
     """
     Provides one column for ModelAdmin list display. This column will contain links to web pages of model instances.

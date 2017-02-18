@@ -4,7 +4,7 @@ from django.http import Http404
 from django.utils.module_loading import import_string
 from sendfile import sendfile
 
-import constants
+from submit import constants
 from submit import settings as submit_settings
 from submit.models import Submit
 

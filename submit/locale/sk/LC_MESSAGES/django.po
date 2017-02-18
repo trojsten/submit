@@ -289,7 +289,7 @@ msgstr "Hodnotenie"
 
 #: templates/submit/review_info.html:18
 msgid "Reviewed file"
-msgstr "Opravneé riešenie"
+msgstr "Opravené riešenie"
 
 #: templates/submit/review_info.html:24
 msgid "Reviewer's comment"

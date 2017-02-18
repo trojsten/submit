@@ -67,7 +67,7 @@ class ReviewResponse(JudgeTestResult):
 
     @classmethod
     def all_items_as_choices(cls):
-        judge_responses = cls.VERBOSE_RESULT.items()
+        judge_responses = list(cls.VERBOSE_RESULT.items())
         communication = [(k, v) for k, v in cls.VERBOSE_RESPONSE.items() if k != ReviewResponse.REVIEWED]
         manual = ((ReviewResponse.REVIEWED, cls.verbose(ReviewResponse.REVIEWED)), )
 
