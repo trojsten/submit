@@ -193,11 +193,11 @@ class Review(models.Model):
     """
     Review holds information about feedback for one submit. This feedback can be created manually or automatically.
 
-    review.score is an absolute scoring, its semantics (how this number affects the results) should be defined
+    `review.score` is an absolute scoring, its semantics (how this number affects the results) should be defined
     in a result-app
 
     Review file should store file with feedback (e.g. submitted file with reviewer's comments).
-    review.filename is an original name of this file
+    `review.filename` is an original name of this file.
     """
     submit = models.ForeignKey(Submit)
     score = models.DecimalField(max_digits=10, decimal_places=5)

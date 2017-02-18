@@ -9,6 +9,10 @@ from submit.models import Review, Submit, SubmitReceiver
 
 
 class SubmitReceiverAdminForm(forms.ModelForm):
+    """
+    Adds a checkbox to SubmitReceiverAdmin -- when this checkbox is checked, a new token will be generated.
+    This may be useful if a token leaks.
+    """
     regenerate_token = forms.BooleanField(required=False)
 
     def save(self, commit=True):
@@ -72,6 +76,11 @@ class ReceiverFromTemplateForm(forms.ModelForm):
 
 
 class SubmitReceiverFromTemplateInline(admin.StackedInline):
+    """
+    This inline admin consists of only one choice field - receiver_template - for a submit receiver.
+    When a template is selected, fields of receiver will be filled with data from
+    `submit_settings.SUBMIT_RECEIVER_TEMPLATES` after save.
+    """
     model = SubmitReceiver
     extra = 0
     show_change_link = True
@@ -80,6 +89,9 @@ class SubmitReceiverFromTemplateInline(admin.StackedInline):
 
 
 class SubmitReceiverFullInline(admin.TabularInline):
+    """
+    This inline admin compactly provides almost all receiver settings.
+    """
     model = SubmitReceiver
     extra = 0
     show_change_link = True
@@ -98,6 +110,11 @@ class ReviewInline(admin.StackedInline):
 
 
 class ViewOnSiteMixin(object):
+    """
+    Provides one column for ModelAdmin list display. This column will contain links to web pages of model instances.
+    This serves as shortcut: to get to the instance web page, only one click is now necessary instead of two clicks
+    (List view -> Model change view -> Instance web page).
+    """
     def view_on_site_list_display(self, obj):
         return mark_safe(u'<a href="{}">{}</a>'.format(obj.get_absolute_url(), 'view on site'))
     view_on_site_list_display.allow_tags = True

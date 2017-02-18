@@ -12,10 +12,13 @@ protocol_file_names = {
 default_protocol = 'OK.protocol'
 
 
-class Testovac(SocketServer.BaseRequestHandler):
+class DummyTester(SocketServer.BaseRequestHandler):
+    """
+    Depending on filename of submitted file, returns one of three protocols.
+    """
     def handle(self):
         input_data = self.request.recv(1024 * 1024).strip()
-        print("Connection from: " + str(self.client_address))
+        print('Connection from: ' + str(self.client_address))
         self.request.close()
 
         data_str = input_data.decode('utf8')
@@ -30,16 +33,16 @@ class Testovac(SocketServer.BaseRequestHandler):
             protocol_data = protocol_file.read()
 
         data = urllib.parse.urlencode({
-            "submit_id": int(submit_id),
-            "protocol": protocol_data
+            'submit_id': int(submit_id),
+            'protocol': protocol_data
         }).encode('utf-8')
-        url = "http://127.0.0.1:8000/submit/receive_protocol/"
+        url = 'http://127.0.0.1:8000/submit/receive_protocol/'
 
         req = urllib.request.Request(url, data)
         urllib.request.urlopen(req)
 
-if __name__ == "__main__":
-    HOST, PORT = "127.0.0.1", 12347
-    server = SocketServer.TCPServer((HOST, PORT), Testovac)
+if __name__ == '__main__':
+    HOST, PORT = '127.0.0.1', 12347
+    server = SocketServer.TCPServer((HOST, PORT), DummyTester)
     server.serve_forever()
-    print("Running!")
+    print('Running!')

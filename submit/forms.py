@@ -47,9 +47,11 @@ class FileSubmitForm(BaseSubmitForm):
 
 class CodeSubmitForm(BaseSubmitForm):
     """
-    Constructor expects a keyword argument `languages` -- list of extensions in format [".cpp", ".py"].
+    Constructor expects a keyword argument `languages` -- list of language identifiers in format ["cc", "py"].
 
-    Checks whether the ext. is allowed, maps extension to judge-supported-ext. and renames file with this new ext.
+    Checks whether the programming language of submitted file is allowed,
+    maps extension to judge-supported-extension
+    and modifies the name of submitted file with this new extension.
     """
     def __init__(self, *args, **kwargs):
         self.languages = kwargs.pop('languages')

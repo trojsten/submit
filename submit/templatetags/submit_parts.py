@@ -46,6 +46,6 @@ def submit_list(receiver, user):
 @register.filter
 def verbose(obj, msg):
     """
-    Use to print verbose versions of constants.JudgeTestResult
+    Use to print verbose versions of `constants.JudgeTestResult` or `constants.ReviewResponse`.
     """
     return obj.verbose(msg)

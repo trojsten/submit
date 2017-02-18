@@ -10,6 +10,10 @@ from submit.models import Submit
 
 
 def add_language_preference_to_filename(filename, language_preference, allowed_languages):
+    """
+    Change the extension of file to judge-supported-format,
+    if a specific language is preferred (chosen by user), use this extension instead.
+    """
     name, extension = os.path.splitext(filename)
     extension = extension.lower()
 
@@ -41,6 +45,9 @@ def write_chunks_to_file(file_path, chunks):
 
 
 def create_submit(user, receiver, sfile=None):
+    """
+    Use this function to create submits so that is_accepted field is set and submitted file is saved properly.
+    """
     submit = Submit(receiver=receiver,
                     user=user,
                     filename='' if sfile is None else sfile.name)
@@ -53,7 +60,8 @@ def create_submit(user, receiver, sfile=None):
 
 def send_file(request, filepath, filename):
     """
-    Display .txt and .pdf files in browser, offer download for other files
+    Send file requested to be downloaded.
+    Display files with extensions in `submit_settings.SUBMIT_VIEWABLE_EXTENSIONS` in browser.
     Returns a response object.
     """
     extension = os.path.splitext(filename)[1]

@@ -16,7 +16,24 @@ class JudgeConnectionError(Exception):
     pass
 
 
-def send_to_judge(review):
+def create_review_and_send_to_judge(submit):
+    """
+    Creates an empty review object, prepares a .raw file (metadata for judge) for submit and sends submit to judge.
+    """
+    review = Review(submit=submit, score=0, short_response=ReviewResponse.SENDING_TO_JUDGE)
+    review.save()
+    _prepare_raw_file(review)
+    try:
+        _send_to_judge(review)
+        review.short_response = ReviewResponse.SENT_TO_JUDGE
+    except JudgeConnectionError:
+        review.short_response = ReviewResponse.JUDGE_UNAVAILABLE
+        raise JudgeConnectionError
+    finally:
+        review.save()
+
+
+def _send_to_judge(review):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((submit_settings.JUDGE_ADDRESS, submit_settings.JUDGE_PORT))
@@ -28,21 +45,7 @@ def send_to_judge(review):
         sock.close()
 
 
-def create_review_and_send_to_judge(submit):
-    review = Review(submit=submit, score=0, short_response=ReviewResponse.SENDING_TO_JUDGE)
-    review.save()
-    prepare_raw_file(review)
-    try:
-        send_to_judge(review)
-        review.short_response = ReviewResponse.SENT_TO_JUDGE
-    except JudgeConnectionError:
-        review.short_response = ReviewResponse.JUDGE_UNAVAILABLE
-        raise JudgeConnectionError
-    finally:
-        review.save()
-
-
-def prepare_raw_file(review):
+def _prepare_raw_file(review):
     with open(review.submit.file_path(), 'rb') as submitted_file:
         submitted_source = submitted_file.read()
 
@@ -69,6 +72,9 @@ def prepare_raw_file(review):
 
 
 def parse_protocol(protocol_path, force_show_details=False):
+    """
+    Reads a testing protocol and prepares context for a web page rendering the protocol.
+    """
     data = dict()
     data['ready'] = True
 

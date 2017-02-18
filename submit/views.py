@@ -126,6 +126,9 @@ def receive_protocol(request):
 @api_view(['POST'])
 @permission_classes([])
 def external_submit(request):
+    """
+    Receive a request from an external application, create submit with review after validation.
+    """
     serializer = ExternalSubmitSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     validated = serializer.validated_data

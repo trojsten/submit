@@ -1,5 +1,6 @@
 from django.utils.translation import ugettext_lazy as _
 
+# Extensions used to store submit and review files
 SUBMITTED_FILE_EXTENSION = '.submit'
 REVIEWED_FILE_EXTENSION = '.review'
 TESTING_PROTOCOL_EXTENSION = '.protocol'
@@ -50,7 +51,7 @@ class ReviewResponse(JudgeTestResult):
     REVIEWED = 'Reviewed'
 
     VERBOSE_RESPONSE = {
-        # strings are here as literals so `manage.py makemessages` will include them into django.po file
+        # strings are as literals here so `manage.py makemessages` will include them into django.po file
         SENDING_TO_JUDGE: _('Sending to judge'),
         SENT_TO_JUDGE: _('Sent to judge'),
         JUDGE_UNAVAILABLE: _('Judge unavailable'),
@@ -81,6 +82,7 @@ class ReviewResponse(JudgeTestResult):
 DEDUCE_LANGUAGE_AUTOMATICALLY_OPTION = '.'
 DEDUCE_LANGUAGE_AUTOMATICALLY_VERBOSE = _('Deduce from extension')
 
+# Definitions of programming languages supported by judge in a following format:
 # language_identifier: (language_name, extension_expected_by_judge, list_of_extensions)
 LANGUAGE_DEFINITIONS = {
     'cc':   ('C++',         '.cc',      ('.cc', '.cpp')),
