@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(
-    name='submit',
+    name='django-trojsten-submit',
     packages=[
         'submit',
     ],
