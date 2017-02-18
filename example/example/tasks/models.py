@@ -19,7 +19,7 @@ class Task(BaseTask):
     max_points = models.IntegerField()
 
     def get_absolute_url(self):
-        return reverse('example.tasks.views.task_statement', kwargs=dict(task_slug=self.slug))
+        return reverse('task_statement', kwargs=dict(task_slug=self.slug))
 
     def __str__(self):
         return u'{} ({})'.format(self.name, self.slug)
