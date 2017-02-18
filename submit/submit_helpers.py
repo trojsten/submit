@@ -1,5 +1,8 @@
 import os
+
 from django.http import Http404
+from django.utils.module_loading import import_string
+
 from sendfile import sendfile
 
 import constants
@@ -38,13 +41,14 @@ def write_chunks_to_file(file_path, chunks):
             destination.write(chunk)
 
 
-def create_submit(user, receiver, is_accepted_method, sfile = None):
+def create_submit(user, receiver, sfile=None):
     submit = Submit(receiver=receiver,
                     user=user,
-                    filename=None if sfile is None else sfile.name)
-    submit.is_accepted = is_accepted_method(submit)
+                    filename='' if sfile is None else sfile.name)
+    submit.is_accepted = import_string(submit_settings.SUBMIT_IS_SUBMIT_ACCEPTED)(submit)
     submit.save()
-    write_chunks_to_file(submit.file_path(), sfile.chunks())
+    if sfile is not None:
+        write_chunks_to_file(submit.file_path(), sfile.chunks())
     return submit
 
 

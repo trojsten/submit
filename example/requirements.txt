@@ -5,4 +5,5 @@ django-dotenv
 django-debug-toolbar
 
 # Submit app
+djangorestframework
 -e ../

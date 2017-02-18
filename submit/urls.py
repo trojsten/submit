@@ -1,14 +1,10 @@
 from django.conf.urls import url
-from django.utils.module_loading import import_string
 
-from . import settings as submit_settings
-from .views import view_submit, receive_protocol, download_submit, download_review
+from .views import post_submit_form, view_submit, receive_protocol, download_submit, download_review, external_submit
 from .commands import rejudge_submit
 
 urlpatterns = [
-    url(r'^post/(?P<receiver_id>\d+)/$',
-        import_string(submit_settings.SUBMIT_POST_SUBMIT_FORM_VIEW).as_view(),
-        name='post_submit'),
+    url(r'^post/(?P<receiver_id>\d+)/$', post_submit_form, name='post_submit'),
     url(r'^view/(?P<submit_id>\d+)/$', view_submit, name='view_submit'),
     url(r'^download/submit/(?P<submit_id>\d+)/$', download_submit, name='download_submit'),
     url(r'^download/review/(?P<review_id>\d+)/$', download_review, name='download_review'),
@@ -20,4 +16,6 @@ urlpatterns = [
     # Also the button at submit_list template is hidden to prevent misclicks that could cause a judge overflow.
     # TODO: Implement pop-up / confirmation page for resubmit approval
     #url(r'^commands/rejudge/receiver/(?P<receiver_id>\d+)/$', rejudge_receiver_submits, name='rejudge_receiver_submits'),
+
+    url(r'^ajax/external_submit/$', external_submit, name='external_submit'),
 ]

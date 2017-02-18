@@ -3,7 +3,6 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from . import constants
-from . import settings as submit_settings
 from .submit_helpers import add_language_preference_to_filename
 
 
@@ -12,7 +11,7 @@ class BaseSubmitForm(forms.Form):
     Base form with one file field checking if some file was submitted and common parameters of file.
     """
     submit_file = forms.FileField(
-        max_length=submit_settings.SUBMIT_UPLOADED_FILENAME_MAXLENGTH,
+        max_length=constants.SUBMIT_UPLOADED_FILENAME_MAXLENGTH,
         allow_empty_file=True,
     )
 

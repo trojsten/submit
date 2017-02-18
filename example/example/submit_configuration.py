@@ -1,37 +1,34 @@
 from django.utils import timezone
-
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
+
 from submit.models import Submit
-from submit.views import PostSubmitForm
+from submit.defaults import form_success_message as default_success_message
 
 
-class PostSubmitFormCustomized(PostSubmitForm):
-    def is_submit_accepted(self, submit):
-        """
-        Submits after the contest has finished are automatically set to `not accepted`.
-        Submit.is_accepted can be modified manually however.
-        """
-        task = submit.receiver.task
+def is_submit_accepted(submit):
+    """
+    Submits after the contest has finished are automatically set to `not accepted`.
+    Submit.is_accepted can be modified manually however.
+    """
+    task = submit.receiver.task
 
-        if task is None:
-            return Submit.NOT_ACCEPTED
+    if task.deadline < timezone.now():
+        return Submit.NOT_ACCEPTED
+    else:
+        return Submit.ACCEPTED
 
-        if task.deadline < timezone.now():
-            return Submit.NOT_ACCEPTED
-        else:
-            return Submit.ACCEPTED
 
-    def get_success_message(self, submit):
-        message = super(PostSubmitFormCustomized, self).get_success_message(submit)
-        if submit.is_accepted == Submit.ACCEPTED:
-            return message
-        else:
-            return format_html(
-                u'{message}<br />{comment}',
-                message=message,
-                comment=_("Contest has already finished, this submit won't affect the results.")
-            )
+def form_success_message(submit):
+    message = default_success_message(submit)
+    if submit.is_accepted == Submit.ACCEPTED:
+        return message
+    else:
+        return format_html(
+            u'{message}<br />{comment}',
+            message=message,
+            comment=_("Contest is finished, this submit won't affect the results.")
+        )
 
 
 def can_post_submit(receiver, user):
