@@ -73,7 +73,7 @@ def view_submit(request, submit_id):
     }
 
     if receiver.show_submitted_file:
-        with open(submit.file_path(), 'r') as submitted_file:
+        with open(submit.file_path(), 'rb') as submitted_file:
             data['submitted_file'] = submitted_file.read().decode('utf-8', 'replace')
 
     if receiver.send_to_judge and review and review.protocol_exists():
@@ -110,7 +110,7 @@ def receive_protocol(request):
     review_id = request.POST['submit_id']
     review = get_object_or_404(Review, pk=review_id)
     protocol = request.POST['protocol'].encode('utf-8')
-    write_chunks_to_file(review.protocol_path(), protocol)
+    write_chunks_to_file(review.protocol_path(), [protocol])
 
     protocol_data = parse_protocol(review.protocol_path())
     if protocol_data['ready']:
