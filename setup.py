@@ -23,7 +23,6 @@ setup(
         'Unidecode>=0.4.19',
         'djangorestframework>=3.5.4',
     ],
-    download_url = 'https://github.com/trojsten/submit/tarball/0.1',
     keywords = ['submit', 'review'],
     classifiers = [
         'Development Status :: 3 - Alpha',
