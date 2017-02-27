@@ -1,0 +1,2 @@
+include README.md
+recursive-include submit *.html *.png *.gif *.js *.css *.jpg *.jpeg *.svg *.py *.mo *.po 
