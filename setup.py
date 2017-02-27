@@ -10,7 +10,7 @@ setup(
     packages=[
         'submit',
     ],
-    version='0.1',
+    version='0.1.0',
     description='Django app for storing submits and reviews, used in Trojsten seminary web apps',
     author='Mário Lipovský',
     author_email='mario.lipovsky@trojsten.sk',
